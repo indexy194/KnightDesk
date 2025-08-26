@@ -10,7 +10,7 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        Title="MainWindow" Height="700" Width="1180">
+        Title="MainWindow" Height="600" Width="1200">
     <Grid>
         <!--Grid Background-->
         <Grid>
@@ -42,14 +42,15 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!--Main Menu-->
             <StackPanel Width="240">
                 <StackPanel Orientation="Horizontal" Margin="0 50 20 40" HorizontalAlignment="Center">
-                    <fa:ImageAwesome Icon="CheckCircle" Foreground="White" Width="30"/> <!-- Change to Icon-->
+                    <fa:ImageAwesome Icon="CheckCircle" Foreground="White" Width="30"/>
+                    <!-- Change to Icon-->
                     <TextBlock Text="KnightDesk" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#FFFFFF"/>
                 </StackPanel>
 
@@ -57,7 +58,7 @@
                     <Grid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <fa:ImageAwesome Icon="FolderOutline" Style="{StaticResource buttonIcon}" />
-                            <TextBlock Text="Wallet" Style="{StaticResource buttonText}" />
+                            <TextBlock Text="Manager" Style="{StaticResource buttonText}" />
                         </StackPanel>
                         <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right" Visibility="Visible" Style="{StaticResource buttonIconExpand}" />
                     </Grid>
@@ -151,50 +152,190 @@
                 <!--Transfer Panel-->
                 <Border Style="{StaticResource border}" Margin="20 120 20 20">
                     <StackPanel Margin="10 88 10 20">
-                        <TextBlock Text="Transfer" Foreground="#fcfcfc" TextAlignment="Center" FontSize="34" FontWeight="SemiBold"/>
-
-                        <Grid Margin="0 12 0 22">
+                        <!-- Account Management Header with Search -->
+                        <Grid Margin="0 10 0 10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-
-                            <Button Style="{StaticResource activeTabButton}" Content="Send"/>
-                            <Button Style="{StaticResource tabButton}" Content="Apply for" Grid.Column="1"/>
+                            
+                            <TextBlock Text="Account Management" Style="{StaticResource textLabel}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            
+                            <!-- Search TextBox -->
+                            <Border Grid.Column="1" 
+                                    Background="#2A2A2A" 
+                                    CornerRadius="15" 
+                                    Height="30" 
+                                    Width="200" 
+                                    Margin="20 0 5 0"
+                                    VerticalAlignment="Center">
+                                <TextBox Background="Transparent" 
+                                         Foreground="White" 
+                                         BorderThickness="0" 
+                                         Padding="10 0" 
+                                         VerticalAlignment="Center"
+                                         FontSize="11">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="Foreground" Value="#888888"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsFocused" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </Border>
+                            
+                            <!-- Search Button -->
+                            <Button Grid.Column="2" 
+                                    Style="{StaticResource topMenuButton}" 
+                                    Width="30"
+                                    Height="30"
+                                    VerticalAlignment="Center">
+                                <fa:ImageAwesome Icon="Search" 
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Style="{StaticResource whiteIcon}"
+                                                 Width="10"
+                                                 Height="10"/>
+                            </Button>
                         </Grid>
 
-                        <TextBlock Text="Pay to" Style="{StaticResource textLabel}" />
-                        <TextBox Margin="0 10 0 5" Text="fad23b456g56fsd2sdf4sdj76urdetgx22d" TextAlignment="Center"/>
-                        <TextBlock Text="Please enter the wallet id or destination email" FontSize="9" Foreground="#e0e0e0" TextAlignment="Center" Opacity="0.5" Margin="0 0 0 20"/>
-
-                        <Grid>
+                        <!-- Header Row -->
+                        <Grid Margin="0 5 0 5">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="0.6*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.6*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
 
-                            <TextBlock Text="Amount" Style="{StaticResource textLabel}" />
-                            <TextBox Grid.Row="1" Margin="0 10 5 20" Text="$ 300.00"/>
-
-                            <TextBlock Text="Reason" Style="{StaticResource textLabel}" Grid.Column="1" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="5 10 0 20" Text="Pay for games"/>
-
-                            <TextBlock Text="Commision : $3" Style="{StaticResource textLabel}" Grid.Row="2" Margin="0 4 0 3"/>
-                            <TextBlock Text="Total : $300.00" Style="{StaticResource textLabel}" Grid.Row="2" Grid.Column="1" Margin="0 4 0 3"/>
+                            <TextBlock Text="Username" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Margin="5 0"/>
+                            <TextBlock Text="Ingame" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="1" Margin="5 0"/>
+                            <TextBlock Text="Status" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="2" TextAlignment="Center"/>
+                            <TextBlock Text="Game" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="3" TextAlignment="Center"/>
+                            <TextBlock Text="Favorite" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="4" TextAlignment="Center"/>
                         </Grid>
 
-                        <Button Style="{StaticResource sendButton}">
-                            <StackPanel Orientation="Horizontal">
-                                <fa:ImageAwesome Icon="SendOutline" Style="{StaticResource whiteIcon}" Grid.Row="3" VerticalAlignment="Center" />
-                                <TextBlock Text="Send" Margin="10 0 0 0" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
+                        <!-- Account Row 1 -->
+                        <Grid Margin="0 3 0 3" Background="#2A2A2A" Height="35">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                            </Grid.ColumnDefinitions>
 
+                            <TextBlock Text="player123@gmail.com" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11"/>
+                            
+                            <TextBlock Text="Knight123" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11" Grid.Column="1"/>
+
+                            <fa:ImageAwesome Grid.Column="2"
+                                             Icon="Circle" 
+                                             Style="{StaticResource whiteIcon}" 
+                                             Width="12" 
+                                             Height="12" 
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Foreground="#F44336"/>
+
+                            <Button Grid.Column="3" Style="{StaticResource button}" Content="Start" FontSize="10" Height="30" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                            <Button Grid.Column="4" 
+                                    Style="{StaticResource button}" 
+                                    Width="30" 
+                                    Height="30" 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center">
+                                <fa:ImageAwesome Icon="StarOutline" Style="{StaticResource whiteIcon}" Width="8" Height="8" Foreground="#888888"/>
+                                <!-- not favorite -->
+                            </Button>
+                        </Grid>
+
+                        <!-- Account Row 2 -->
+                        <Grid Margin="0 3 0 3" Background="#2A2A2A" Height="35">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="gamer456@outlook.com" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11"/>
+                            
+                            <TextBlock Text="ProGamer" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11" Grid.Column="1"/>
+
+                            <fa:ImageAwesome Grid.Column="2"
+                                             Icon="Circle" 
+                                             Style="{StaticResource whiteIcon}" 
+                                             Width="12" 
+                                             Height="12" 
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Foreground="#F44336"/>
+
+                            <Button Grid.Column="3" 
+                                    Style="{StaticResource button}" 
+                                    Content="Start" 
+                                    FontSize="10" 
+                                    Height="30" 
+                                    Margin="2" 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"/>
+
+                            <Button Grid.Column="4" 
+                                    Style="{StaticResource button}" 
+                                    Width="30" 
+                                    Height="30" 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center">
+                                <fa:ImageAwesome Icon="StarOutline" Style="{StaticResource whiteIcon}" Width="8" Height="8" Foreground="#888888"/>
+                                <!-- not favorite -->
+                            </Button>
+                        </Grid>
+
+                        <!-- Account Row 3 -->
+                        <Grid Margin="0 3 0 3" Background="#2A2A2A" Height="35">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="prouser789@yahoo.com" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11"/>
+                            
+                            <TextBlock Text="ElitePlayer" Style="{StaticResource textLabel}" VerticalAlignment="Center" Margin="5 0" FontSize="11" Grid.Column="1"/>
+
+                            <fa:ImageAwesome Grid.Column="2" 
+                                             Icon="Circle" 
+                                             Style="{StaticResource whiteIcon}" 
+                                             Width="12" 
+                                             Height="12" 
+                                             Foreground="#4CAF50" 
+                                             HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center"/>
+                                             
+                            <Button Grid.Column="3" 
+                                    Style="{StaticResource button}" 
+                                    Content="Start" 
+                                    FontSize="10" 
+                                    Height="30" 
+                                    Margin="2" 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"/>
+
+                            <Button Grid.Column="4" Style="{StaticResource button}" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <fa:ImageAwesome Icon="Star" Style="{StaticResource whiteIcon}" Width="8" Height="8" Foreground="#FFD700"/>
+                            </Button>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -209,7 +350,7 @@
                     </Border.Background>
 
                     <Grid>
-                           
+
                         <!--new -->
                         <Grid Margin="15 13">
                             <Grid.ColumnDefinitions>
@@ -226,148 +367,271 @@
                             <TextBlock Text="Information" Foreground="#fcfcfc" FontSize="16" FontWeight="SemiBold" Grid.ColumnSpan="3" Margin="0 0 0 18"/>
 
                             <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.ColumnSpan="3">
-                                <fa:ImageAwesome Icon="Edit" Style="{StaticResource whiteIcon}" Width="14" Height="12" />
+                                <fa:ImageAwesome Icon="Edit" Style="{StaticResource whiteIcon}" Width="14" Height="12" /> <!-- can make simple icon here-->
                             </Button>
 
                             <fa:ImageAwesome Icon="MapMarker" Style="{StaticResource whiteIcon}" Grid.Row="1" VerticalAlignment="Top" />
                             <fa:ImageAwesome Icon="Folder" Style="{StaticResource whiteIcon}" Grid.Row="2" VerticalAlignment="Top" />
 
-                            <TextBlock Text="Address :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="1" Margin="10 0 10 18" />
-                            <TextBlock Text="Wallet ID :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="2" Margin="10 0 10 0" />
+                            <TextBlock Text="Account :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="1" Margin="10 0 10 18" />
+                            <TextBlock Text="Ingame :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="2" Margin="10 0 10 0" />
 
-                            <TextBlock Text="Peru" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="1" />
-                            <TextBlock Text="3d2csd9ut7fvcepr65v83ndeyqt89bczb" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="2" />
+                            <TextBlock Text="test@gmail.com" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="1" />
+                            <TextBlock Text="tester" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="2" />
+
+                            <!---button fast login here-->
+                            <Button Style="{StaticResource fillButton}"
+                                    Grid.Column="2"
+                                    Grid.Row="2"
+                                    Width="100"
+                                    VerticalAlignment="Bottom" 
+                                    Content="Login"/>
+                            <Button Style="{StaticResource exitButton}"
+                                    Grid.Column="2"
+                                    Grid.Row="2"
+                                    Width="100"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom" 
+                                    Content="Exit"/>
                         </Grid>
+                        
                     </Grid>
                 </Border>
             </Grid>
 
-            <!--Info Panel-->
+            <!--Tool Controls Panel-->
             <StackPanel Grid.Column="2" Margin="0 0 20 0">
 
-                <!--Top Menu-->
-                <StackPanel Orientation="Horizontal" Margin="20 40 20 0" HorizontalAlignment="Right">
+                <!-- Tool Controls Header -->
+                <Border Style="{StaticResource border}" Margin="10 40 10 20">
+                    <StackPanel Margin="15">
+                        <!-- Title -->
+                        <TextBlock Text="Tool Controls" 
+                                   Style="{StaticResource textLabel}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold" 
+                                   Margin="0 0 0 15"/>
+                        <!-- Auto State -->
+                        <Border Style="{StaticResource toolsBorder}"
+                                Margin="0 10 0 0">
+                            <Grid>
+                                
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="Auto State" 
+                                           Style="{StaticResource textLabel}" 
+                                           VerticalAlignment="Center" 
+                                           FontSize="12"/>
 
-                    <Button Style="{StaticResource topMenuButton}" Margin="10 0 0 0" Width="300" Height="50">
-                        <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="Sliders" Style="{StaticResource topMenuIcon}"/>
-                            <TextBlock Text="Add Filters" VerticalAlignment="Center" FontSize="14" Margin="8 0 0 0"/>
-                        </StackPanel>
-                    </Button>
+                                <Button Grid.Column="1" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                    <TextBlock Text="ON" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                </Button>
 
-                    <Button Style="{StaticResource topMenuButton}" Margin="10 0 0 0">
-                        <fa:ImageAwesome Icon="BellOutline" Style="{StaticResource topMenuIcon}"/>
-                    </Button>
+                                <Button Grid.Column="2" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                    <TextBlock Text="OFF" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                </Button>
+                            </Grid>
+                        </Border>
 
-                    <Button Style="{StaticResource topMenuButton}" Margin="10 0 0 0">
-                        <fa:ImageAwesome Icon="Search" Style="{StaticResource topMenuIcon}"/>
-                    </Button>
+                        <!-- Auto Event -->
+                        <Border Style="{StaticResource toolsBorder}" 
+                                Margin="0 10 0 0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Auto Event" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="12"/>
 
-                </StackPanel>
+                                    <Button Grid.Column="1" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                        <TextBlock Text="ON" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                    </Button>
 
-                <!--Info Card-->
-                <Border Style="{StaticResource cardBorder}" Margin="20 31 20 0">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#9D85FA" Offset="0" />
-                            <GradientStop Color="#C77AFF" Offset="1" />
-                        </LinearGradientBrush>
-                    </Border.Background>
+                                    <Button Grid.Column="2" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                        <TextBlock Text="OFF" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                    </Button>
+                                </Grid>
+                                
+                                <ComboBox Grid.Row="1" 
+                                          Margin="0 10 0 0" 
+                                          Height="25" 
+                                          Background="White" 
+                                          BorderBrush="#E0E0E0">
+                                    <ComboBoxItem Content="Trung Thu" IsSelected="True"/>
+                                    <ComboBoxItem Content="Sát Thủ"/>
+                                    <ComboBoxItem Content="Heo"/>
+                                    <ComboBoxItem Content="Hỏa Kì Lân"/>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
 
-                    <Grid>
-                        <TextBlock Text="Balance" Style="{StaticResource textLabel}" VerticalAlignment="Top" Margin="15 8 0 0" FontSize="14" FontWeight="SemiBold"/>
-                        <TextBlock Text="$ 9,150,00" Style="{StaticResource textLabel}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" Margin="15 0 0 10" />
+                        <!-- Auto Equip -->
+                        <Border Style="{StaticResource toolsBorder}"
+                                Margin="0 10 0 0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Auto Equip" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="12"/>
+                                    <Button Grid.Column="1" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                        <TextBlock Text="ON" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                    </Button>
 
-                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 8 10 0">
-                            <Button Style="{StaticResource fillButton}" >
-                                <fa:ImageAwesome Icon="Dollar"  Style="{StaticResource whiteIcon}" Width="10" Height="10" />
-                            </Button>
+                                    <Button Grid.Column="2" 
+                                        Style="{StaticResource toolButtons}"
+                                        Height="25"
+                                        Margin="5 0"
+                                        FontWeight="Bold">
+                                        <TextBlock Text="OFF" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="8"/>
+                                    </Button>
+                                </Grid>
+                                
+                                <ComboBox Grid.Row="1" 
+                                          Margin="0 10 0 0" 
+                                          Height="25" 
+                                          Background="White" 
+                                          BorderBrush="#E0E0E0">
+                                    <ComboBoxItem Content="Sát Thủ" IsSelected="True"/>
+                                    <ComboBoxItem Content="Trung Thu"/>
+                                    <ComboBoxItem Content="Heo"/>
+                                    <ComboBoxItem Content="Hỏa Kì Lân"/>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
 
-                            <Button Style="{StaticResource fillButton}" Margin="0 5 0 0">
-                                <fa:ImageAwesome Icon="Percent"  Style="{StaticResource whiteIcon}" Width="10" Height="10" />
-                            </Button>
-                        </StackPanel>
+                        <!-- Tên Focus -->
+                        <Border Style="{StaticResource toolsBorder}" 
+                                Margin="0 10 0 0">
+                            <TextBlock Text="Tên Focus" 
+                                       Style="{StaticResource textLabel}" 
+                                       FontSize="12"/>
+                        </Border>
 
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="15 0 0 5">
-                            <Button Style="{StaticResource fillButton}">
-                                <fa:ImageAwesome Icon="ArrowUp"  Style="{StaticResource whiteIcon}" Width="10" Height="10" />
-                            </Button>
-
-                            <TextBlock Text="+ $ 620.12" Style="{StaticResource textLabel}" Margin="10 0 20 0" FontWeight="SemiBold" VerticalAlignment="Center"/>
-
-                            <Button Style="{StaticResource fillButton}">
-                                <fa:ImageAwesome Icon="ArrowDown"  Style="{StaticResource whiteIcon}" Width="10" Height="10" />
-                            </Button>
-
-                            <TextBlock Text="- $ 920.60" Style="{StaticResource textLabel}" Margin="10 0 0 0" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!--Information Card-->
-                <Border Style="{StaticResource border}" Margin="20">
-                    <Grid Margin="15 13">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Text="Information" Foreground="#fcfcfc" FontSize="16" FontWeight="SemiBold" Grid.ColumnSpan="3" Margin="0 0 0 18"/>
-
-                        <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.ColumnSpan="3">
-                            <fa:ImageAwesome Icon="Edit" Style="{StaticResource whiteIcon}" Width="14" Height="12" />
-                        </Button>
-
-                        <fa:ImageAwesome Icon="MapMarker" Style="{StaticResource whiteIcon}" Grid.Row="1" VerticalAlignment="Top" />
-                        <fa:ImageAwesome Icon="Folder" Style="{StaticResource whiteIcon}" Grid.Row="2" VerticalAlignment="Top" />
-
-                        <TextBlock Text="Address :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="1" Margin="10 0 10 18" />
-                        <TextBlock Text="Wallet ID :" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="2" Margin="10 0 10 0" />
-
-                        <TextBlock Text="Peru" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="1" />
-                        <TextBlock Text="3d2csd9ut7fvcepr65v83ndeyqt89bczb" Style="{StaticResource textLabel}" Grid.Column="2" Grid.Row="2" />
-                    </Grid>
-                </Border>
-
-                <!--Security Card-->
-                <Border Style="{StaticResource border}" Margin="20 0 20 0">
-                    <Grid Margin="15 10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Text="Security" Foreground="#fcfcfc" FontWeight="SemiBold" FontSize="16" Grid.ColumnSpan="3" Margin="0 0 0 15" />
-
-                        <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.ColumnSpan="3">
-                            <fa:ImageAwesome Icon="EllipsisH" Style="{StaticResource whiteIcon}" Width="14" Height="12" />
-                        </Button>
-
-                        <fa:ImageAwesome Icon="Shield" Style="{StaticResource whiteIcon}" Grid.Row="1" VerticalAlignment="Center" />
-                        <fa:ImageAwesome Icon="Key" Style="{StaticResource whiteIcon}" Grid.Row="2" VerticalAlignment="Center" />
-                        <fa:ImageAwesome Icon="Lock" Style="{StaticResource whiteIcon}" Grid.Row="3" VerticalAlignment="Center" />
-
-                        <TextBlock Text="2FA Enabled" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="1" Margin="10 0 0 0" VerticalAlignment="Center" />
-                        <TextBlock Text="Key" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="2" Margin="10 0 0 0" VerticalAlignment="Center" />
-                        <TextBlock Text="Password" Style="{StaticResource textLabel}" Grid.Column="1" Grid.Row="3" Margin="10 0 0 0" VerticalAlignment="Center" />
-
-                        <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Content="Change" Margin="0 5 0 5" />
-                        <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2" Content="Change" Margin="0 5 0 5"/>
-                        <Button Style="{StaticResource button}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3" Content="Change" Margin="0 5 0 5"/>
-                    </Grid>
+                        <!-- Auto Mount -->
+                        <Border Style="{StaticResource toolsBorder}"
+                                Margin="0 10 0 0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Text="Auto Mount" 
+                                           Style="{StaticResource textLabel}" 
+                                           FontSize="12" 
+                                           Margin="0 0 0 10"/>
+                                
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ComboBox Margin="0 0 5 0" 
+                                              Height="25" 
+                                              Background="White" 
+                                              BorderBrush="#E0E0E0">
+                                        <ComboBoxItem Content="Heo" IsSelected="True"/>
+                                        <ComboBoxItem Content="Sát Thủ"/>
+                                        <ComboBoxItem Content="Trung Thu"/>
+                                        <ComboBoxItem Content="Hỏa Kì Lân"/>
+                                    </ComboBox>
+                                    
+                                    <ComboBox Grid.Column="1" 
+                                              Margin="5 0 0 0" 
+                                              Height="25" 
+                                              Background="White" 
+                                              BorderBrush="#E0E0E0">
+                                        <ComboBoxItem Content="Hỏa Kì Lân" IsSelected="True"/>
+                                        <ComboBoxItem Content="Sát Thủ"/>
+                                        <ComboBoxItem Content="Trung Thu"/>
+                                        <ComboBoxItem Content="Heo"/>
+                                    </ComboBox>
+                                </Grid>
+                                
+                                <Grid Grid.Row="2" Margin="0 10 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Button Content="Load" 
+                                            Grid.Column="0"
+                                            Style="{StaticResource loadButton}"/>
+                                    <Button Content="Load" 
+                                            Grid.Column="1"
+                                            Style="{StaticResource loadButton}"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        
+                    </StackPanel>
                 </Border>
 
             </StackPanel>
