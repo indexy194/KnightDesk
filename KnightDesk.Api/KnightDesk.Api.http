@@ -1,0 +1,6 @@
+@KnightDesk.Api_HostAddress = http://localhost:5204
+
+GET {{KnightDesk.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
