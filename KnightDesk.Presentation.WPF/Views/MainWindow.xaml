@@ -1,0 +1,201 @@
+<Window x:Class="KnightDesk.Presentation.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:local="clr-namespace:KnightDesk.Presentation.WPF.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        Title="MainWindow" Height="600" Width="1200">
+
+    <Grid>
+        <!--Grid Background-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border CornerRadius="25 0 0 25" Width="220">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#343155" Offset="0" />
+                        <GradientStop Color="#3B2E58" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Border CornerRadius="0 25 25 0" MouseDown="Border_MouseDown" Grid.Column="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#3E3A65" Offset="0" />
+                        <GradientStop Color="#473765" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+
+        <!--Grid Controls-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Main Menu-->
+            <StackPanel Width="240">
+                <StackPanel Orientation="Horizontal" Margin="0 50 20 40" HorizontalAlignment="Center">
+                    <fa:ImageAwesome Icon="CheckCircle" Foreground="White" Width="30"/>
+                    <!-- Change to Icon-->
+                    <TextBlock Text="KnightDesk" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#FFFFFF"/>
+                </StackPanel>
+
+                <Button Command="{Binding NavigateToManagerCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsManagerActive}" Value="True">
+                                    <Setter Property="Background" Value="#7B68EE"/>
+                                    <Setter Property="BorderBrush" Value="#9370DB"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="FolderOutline" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Manager" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right">
+                            <fa:ImageAwesome.Style>
+                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource buttonIconExpand}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsManagerActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
+                    </Grid>
+                </Button>
+
+                <Button Command="{Binding NavigateToAccountsCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccountsActive}" Value="True">
+                                    <Setter Property="Background" Value="#7B68EE"/>
+                                    <Setter Property="BorderBrush" Value="#9370DB"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="List" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Accounts" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right" >
+                            <fa:ImageAwesome.Style>
+                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource buttonIconExpand}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsAccountsActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
+                    </Grid>
+                </Button>
+
+                <Button Command="{Binding NavigateToServerConfigCommand}" >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsServerConfigActive}" Value="True">
+                                    <Setter Property="Background" Value="#7B68EE"/>
+                                    <Setter Property="BorderBrush" Value="#9370DB"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="Server" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Server Config" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right">
+                            <fa:ImageAwesome.Style>
+                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource buttonIconExpand}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsServerConfigActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
+                    </Grid>
+                </Button>
+                <Button Command="{Binding NavigateToConfigCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsConfigActive}" Value="True">
+                                    <Setter Property="Background" Value="#7B68EE"/>
+                                    <Setter Property="BorderBrush" Value="#9370DB"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="Gear" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Config" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right">
+                            <fa:ImageAwesome.Style>
+                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource buttonIconExpand}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsConfigActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
+                    </Grid>
+                </Button>
+
+                <Separator Background="#e0e0e0" Opacity="0.5" Margin="50 15 60 15"/>
+
+                <Button Style="{StaticResource menuButton}" Command="{Binding LogoutCommand}">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="CircleOutlineNotch" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Logout" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right" Style="{StaticResource buttonIconExpand}" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <!--Content Panel-->
+            <Grid Grid.Column="1">
+                <!-- Content Area - Show either CurrentPage or ManagerPage -->
+                <ContentPresenter Content="{Binding DisplayedPage}"/>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Window>

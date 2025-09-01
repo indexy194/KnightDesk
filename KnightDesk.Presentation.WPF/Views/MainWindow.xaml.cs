@@ -1,8 +1,8 @@
-﻿using KnightDesk.Presentation.WPF.ViewModels;
+using KnightDesk.Presentation.WPF.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 
-namespace KnightDesk.Presentation.WPF
+namespace KnightDesk.Presentation.WPF.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -12,7 +12,7 @@ namespace KnightDesk.Presentation.WPF
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = viewModel;
+            DataContext = new MainWindowViewModel();
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

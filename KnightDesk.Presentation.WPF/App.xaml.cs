@@ -1,5 +1,6 @@
 ﻿using KnightDesk.Presentation.WPF.Services;
 using KnightDesk.Presentation.WPF.ViewModels;
+using KnightDesk.Presentation.WPF.Views;
 using System;
 using System.Configuration;
 using System.Windows;

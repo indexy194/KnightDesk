@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,14 +11,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace KnightDesk.Presentation.WPF
+namespace KnightDesk.Presentation.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for Template.xaml
+    /// Interaction logic for LoginWindow.xaml
     /// </summary>
-    public partial class Template : Window
+    public partial class LoginWindow : Window
     {
-        public Template()
+        public LoginWindow()
         {
             InitializeComponent();
         }
@@ -26,6 +26,15 @@ namespace KnightDesk.Presentation.WPF
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
+        }
+
+        private void CloseButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            //close the application
+            Application.Current.Shutdown();
+        }
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

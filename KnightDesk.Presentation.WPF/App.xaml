@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:local="clr-namespace:KnightDesk.Presentation.WPF"
-             StartupUri="MainWindow.xaml">
+             StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
          <Style x:Key="menuButton" TargetType="Button">
             <Setter Property="Height" Value="47" />

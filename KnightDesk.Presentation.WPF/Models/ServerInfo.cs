@@ -8,6 +8,8 @@ namespace KnightDesk.Presentation.WPF.Models
         private int _id;
         private int _indexServer;
         private string _name = string.Empty;
+        private string _description = string.Empty;
+        private int _accountCount;
         private DateTime? _createdAt;
         private DateTime? _updatedAt;
         private bool _isDeleted;
@@ -59,6 +61,26 @@ namespace KnightDesk.Presentation.WPF.Models
             {
                 _updatedAt = value;
                 OnPropertyChanged(nameof(UpdatedAt));
+            }
+        }
+
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                _description = value;
+                OnPropertyChanged(nameof(Description));
+            }
+        }
+
+        public int AccountCount
+        {
+            get => _accountCount;
+            set
+            {
+                _accountCount = value;
+                OnPropertyChanged(nameof(AccountCount));
             }
         }
 

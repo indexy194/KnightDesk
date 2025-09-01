@@ -1,0 +1,217 @@
+<UserControl x:Class="KnightDesk.Presentation.WPF.Pages.ServerConfigPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:KnightDesk.Presentation.WPF.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Server Config List Panel -->
+        <Border Style="{StaticResource border}" Margin="20">
+            <StackPanel Margin="15">
+                <!-- Header with Search -->
+                <Grid Margin="0 10 0 20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Server Configuration" 
+                               Style="{StaticResource textLabel}" 
+                               FontSize="18" 
+                               FontWeight="SemiBold" 
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Search TextBox -->
+                    <Border Grid.Column="1" 
+                            Background="#2A2A2A" 
+                            CornerRadius="15" 
+                            Height="30" 
+                            Width="200" 
+                            Margin="10 0 5 0"
+                            VerticalAlignment="Center">
+                        <TextBox x:Name="SearchTextBox"
+                                 Background="Transparent" 
+                                 Foreground="White" 
+                                 BorderThickness="0" 
+                                 Padding="10 0" 
+                                 VerticalAlignment="Center"
+                                 FontSize="11"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Foreground" Value="#888888"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Border>
+                    
+                    <!-- Search Button -->
+                    <Button Grid.Column="2" 
+                            Style="{StaticResource topMenuButton}" 
+                            Width="30"
+                            Height="30"
+                            VerticalAlignment="Center"
+                            Command="{Binding SearchCommand}">
+                        <fa:ImageAwesome Icon="Search" 
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Style="{StaticResource whiteIcon}"
+                                         Width="10"
+                                         Height="10"/>
+                    </Button>
+
+                    <!-- Add New Server Button -->
+                    <Button Grid.Column="3" 
+                            Style="{StaticResource fillButton}" 
+                            Width="100"
+                            Height="30"
+                            Margin="10 0 0 0"
+                            VerticalAlignment="Center"
+                            Content="Add New"
+                            Command="{Binding AddNewServerCommand}"/>
+                </Grid>
+
+                <!-- Header Row -->
+                <Grid Margin="0 5 0 5" Background="#2A2A2A" Height="35">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.8*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.8*"/>
+                        <ColumnDefinition Width="0.8*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Index" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Margin="10 0" TextAlignment="Center"/>
+                    <TextBlock Text="Server Name" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="1" Margin="5 0"/>
+                    <TextBlock Text="Accounts" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="2" TextAlignment="Center"/>
+                    <TextBlock Text="Edit" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="3" TextAlignment="Center"/>
+                    <TextBlock Text="Delete" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="4" TextAlignment="Center"/>
+                </Grid>
+
+                <!-- Servers List -->
+                <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding FilteredServers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 2 0 2" Background="#333333" Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                        <ColumnDefinition Width="0.8*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding IndexServer}" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               Margin="10 0" 
+                                               FontSize="11"
+                                               TextAlignment="Center"/>
+                                    
+                                    <TextBlock Text="{Binding Name}" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               Margin="5 0" 
+                                               FontSize="11" 
+                                               Grid.Column="1"/>
+
+                                    <TextBlock Text="{Binding AccountCount}" 
+                                               Style="{StaticResource textLabel}" 
+                                               VerticalAlignment="Center" 
+                                               FontSize="11" 
+                                               Grid.Column="2" 
+                                               TextAlignment="Center"/>
+
+                                    <Button Grid.Column="3" 
+                                            Style="{StaticResource button}" 
+                                            Width="30" 
+                                            Height="30" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Command="{Binding DataContext.EditServerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <fa:ImageAwesome Icon="Edit" Style="{StaticResource whiteIcon}" Width="8" Height="8"/>
+                                    </Button>
+
+                                    <Button Grid.Column="4" 
+                                            Style="{StaticResource button}" 
+                                            Width="30" 
+                                            Height="30" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Command="{Binding DataContext.DeleteServerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <fa:ImageAwesome Icon="Trash" Style="{StaticResource whiteIcon}" Width="8" Height="8" Foreground="#F44336"/>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <!-- Add/Edit Server Panel -->
+        <Border Grid.Column="1" Style="{StaticResource border}" Margin="0 20 20 20">
+            <StackPanel Margin="15">
+                <TextBlock Text="{Binding FormTitle}" 
+                           Style="{StaticResource textLabel}" 
+                           FontSize="16" 
+                           FontWeight="SemiBold" 
+                           Margin="0 10 0 20"/>
+
+                <!-- Server Index -->
+                <TextBlock Text="Server Index" Style="{StaticResource textLabel}" Margin="0 10 0 5"/>
+                <TextBox Text="{Binding CurrentServer.IndexServer, UpdateSourceTrigger=PropertyChanged}" 
+                         Height="30" 
+                         Padding="10 0"/>
+
+                <!-- Server Name -->
+                <TextBlock Text="Server Name" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
+                <TextBox Text="{Binding CurrentServer.Name, UpdateSourceTrigger=PropertyChanged}" 
+                         Height="30" 
+                         Padding="10 0"/>
+
+                <!-- Server Description (if needed) -->
+                <TextBlock Text="Description" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
+                <TextBox Text="{Binding CurrentServer.Description, UpdateSourceTrigger=PropertyChanged}" 
+                         Height="60" 
+                         Padding="10 5"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"/>
+
+                <!-- Action Buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 30 0 0">
+                    <Button Content="{Binding SaveButtonText}" 
+                            Style="{StaticResource fillButton}" 
+                            Width="80" 
+                            Height="35"
+                            Margin="0 0 10 0"
+                            Command="{Binding SaveServerCommand}"/>
+                    
+                    <Button Content="Cancel" 
+                            Style="{StaticResource button}" 
+                            Width="80" 
+                            Height="35"
+                            Command="{Binding CancelCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
