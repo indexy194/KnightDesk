@@ -172,6 +172,16 @@ namespace KnightDesk.Core.Application.Services
                         Message = "Invalid account data"
                     };
                 }
+                //Check if user exists
+                var checkUser = await _unitOfWork.Users.GetByIdAsync(account.UserId);
+                if (checkUser == null)
+                {
+                    return new GeneralResponseDTO<AccountDTO>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = $"User with ID {account.UserId} does not exist"
+                    };
+                }
 
                 // Check if username already exists for this server
                 var usernameExistsResult = await IsUsernameExistsAsync(account.Username!, account.IndexServer);

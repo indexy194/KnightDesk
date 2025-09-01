@@ -22,36 +22,82 @@ namespace KnightDesk.Api.Controllers
         /// </summary>
         /// <returns>List of users with response metadata</returns>
         [HttpGet]
-        public async Task<ActionResult<GeneralResponseDTO<IEnumerable<UserDTO>>>> GetAllUsers()
+        public async Task<GeneralResponseDTO<IEnumerable<UserDTO>>> GetAllUsers()
         {
-            var result = await _userService.GetAllUsersAsync();
-            return result;
+            try
+            {
+                var result = await _userService.GetAllUsersAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all users");
+                return new GeneralResponseDTO<IEnumerable<UserDTO>>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
-
         /// <summary>
         /// Get user by ID
         /// </summary>
         /// <param name="id">User ID</param>
         /// <returns>User details with response metadata</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO?>>> GetUser(int id)
+        public async Task<GeneralResponseDTO<UserDTO>> GetUser(int id)
         {
-            var result = await _userService.GetUserByIdAsync(id);
-            HttpContext.Response.StatusCode = result.Code;
-            return result;
+            try
+            {
+                var result = await _userService.GetUserByIdAsync(id);
+                HttpContext.Response.StatusCode = result.Code;
+                return result!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user by ID {UserId}", id);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
-
         /// <summary>
         /// Get user by username
         /// </summary>
         /// <param name="username">Username</param>
         /// <returns>User details with response metadata ( admin func )</returns>
         [HttpGet("username/{username}")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO?>>> GetUserByUsername(string username)
+        public async Task<GeneralResponseDTO<UserDTO>> GetUserByUsername(string username)
         {
-            var result = await _userService.GetUserByUsernameAsync(username);
-            HttpContext.Response.StatusCode = result.Code;
-            return result;
+            try
+            {
+                var result = await _userService.GetUserByUsernameAsync(username);
+                HttpContext.Response.StatusCode = result.Code;
+                return result!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user by username {Username}", username);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -60,24 +106,55 @@ namespace KnightDesk.Api.Controllers
         /// <param name="ipAddress">IP address</param>
         /// <returns>User details with response metadata</returns>
         [HttpGet("ip/{ipAddress}")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO?>>> GetUserByIPAddress(string ipAddress)
+        public async Task<GeneralResponseDTO<UserDTO>> GetUserByIPAddress(string ipAddress)
         {
-            var result = await _userService.GetUserByIPAddressAsync(ipAddress);
-            HttpContext.Response.StatusCode = result.Code;
-            return result;
+            try
+            {
+                var result = await _userService.GetUserByIPAddressAsync(ipAddress);
+                HttpContext.Response.StatusCode = result.Code;
+                return result!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user by IP address {IPAddress}", ipAddress);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
-
         /// <summary>
         /// Create a new user
         /// </summary>
         /// <param name="userDto">User creation data</param>
         /// <returns>Created user with response metadata</returns>
         [HttpPost]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO>>> CreateUser([FromBody] CreateUserDTO userDto)
+        public async Task<GeneralResponseDTO<UserDTO>> CreateUser([FromBody] CreateUserDTO userDto)
         {
-            var result = await _userService.CreateUserAsync(userDto);
-            HttpContext.Response.StatusCode = result.Code;
-            return result;
+            try
+            {
+                var result = await _userService.CreateUserAsync(userDto);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating user with username {Username}", userDto?.Username);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -87,19 +164,27 @@ namespace KnightDesk.Api.Controllers
         /// <param name="userDto">User update data</param>
         /// <returns>Updated user with response metadata</returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO>>> UpdateUser([FromBody] UpdateUserDTO userDto)
+        public async Task<GeneralResponseDTO<UserDTO>> UpdateUser([FromBody] UpdateUserDTO userDto)
         {
-            if (userDto == null)
+            try
             {
-                return BadRequest(new GeneralResponseDTO<UserDTO>
-                {
-                    Code = (int)RESPONSE_CODE.BadRequest,
-                    Message = "User data is required"
-                });
+                var result = await _userService.UpdateUserAsync(userDto);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
             }
-            var result = await _userService.UpdateUserAsync(userDto);
-            HttpContext.Response.StatusCode = result.Code;
-            return result;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user with ID {UserId}", userDto?.Id);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -108,31 +193,56 @@ namespace KnightDesk.Api.Controllers
         /// <param name="id">User ID</param>
         /// <returns>Deletion result with response metadata</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> DeleteUser(int id)
+        public async Task<GeneralResponseDTO<bool>> DeleteUser(int id)
         {
-            var result = await _userService.DeleteUserAsync(id);
-            return result;
+            try
+            {
+                var result = await _userService.DeleteUserAsync(id);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user with ID {UserId}", id);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
         }
-
         /// <summary>
         /// User login
         /// </summary>
         /// <param name="loginRequest">Login credentials</param>
         /// <returns>User data if login successful with response metadata</returns>
         [HttpPost("login")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO?>>> Login([FromBody] LoginUserDTO loginRequest)
+        public async Task<GeneralResponseDTO<UserDTO>> Login([FromBody] LoginUserDTO loginRequest)
         {
-            if (loginRequest == null)
+            try
             {
-                return BadRequest(new GeneralResponseDTO<UserDTO?>
-                {
-                    Code = (int)RESPONSE_CODE.BadRequest,
-                    Message = "Login data is required"
-                });
+                var result = await _userService.LoginAsync(loginRequest);
+                HttpContext.Response.StatusCode = result.Code;
+                return result!;
             }
-
-            var result = await _userService.LoginAsync(loginRequest);
-            return result;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for user {Username}", loginRequest?.Username);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -141,19 +251,27 @@ namespace KnightDesk.Api.Controllers
         /// <param name="registerRequest">Registration data</param>
         /// <returns>Created user with response metadata</returns>
         [HttpPost("register")]
-        public async Task<ActionResult<GeneralResponseDTO<UserDTO>>> Register([FromBody] RegisterUserDTO registerRequest)
+        public async Task<GeneralResponseDTO<UserDTO>> Register([FromBody] RegisterUserDTO registerRequest)
         {
-            if (registerRequest == null)
+            try
             {
-                return BadRequest(new GeneralResponseDTO<UserDTO>
-                {
-                    Code = (int)RESPONSE_CODE.BadRequest,
-                    Message = "Registration data is required"
-                });
+                var result = await _userService.RegisterAsync(registerRequest);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
             }
-
-            var result = await _userService.RegisterAsync(registerRequest);
-            return result;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for user {Username}", registerRequest?.Username);
+                return new GeneralResponseDTO<UserDTO>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -163,10 +281,28 @@ namespace KnightDesk.Api.Controllers
         /// <param name="password">Password</param>
         /// <returns>Validation result with response metadata</returns>
         [HttpPost("validate-credentials")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> ValidateCredentials([FromQuery] string username, [FromQuery] string password)
+        public async Task<GeneralResponseDTO<bool>> ValidateCredentials([FromQuery] string username, [FromQuery] string password)
         {
-            var result = await _userService.ValidateCredentialsAsync(username, password);
-            return result;
+            try
+            {
+                var result = await _userService.ValidateCredentialsAsync(username, password);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating credentials for user {Username}", username);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
         }
 
         /// <summary>
@@ -175,10 +311,28 @@ namespace KnightDesk.Api.Controllers
         /// <param name="username">Username to check</param>
         /// <returns>Availability result with response metadata</returns>
         [HttpGet("check-username/{username}")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> CheckUsernameAvailability(string username)
+        public async Task<GeneralResponseDTO<bool>> CheckUsernameAvailability(string username)
         {
-            var result = await _userService.IsUsernameAvailableAsync(username);
-            return result;
+            try
+            {
+                var result = await _userService.IsUsernameAvailableAsync(username);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking username availability for {Username}", username);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
         }
 
         /// <summary>
@@ -187,10 +341,28 @@ namespace KnightDesk.Api.Controllers
         /// <param name="ipAddress">IP address to check</param>
         /// <returns>Availability result with response metadata</returns>
         [HttpGet("check-ip/{ipAddress}")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> CheckIPAddressAvailability(string ipAddress)
+        public async Task<GeneralResponseDTO<bool>> CheckIPAddressAvailability(string ipAddress)
         {
-            var result = await _userService.IsIPAddressAvailableAsync(ipAddress);
-            return result;
+            try
+            {
+                var result = await _userService.IsIPAddressAvailableAsync(ipAddress);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking IP address availability for {IPAddress}", ipAddress);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
         }
 
         /// <summary>
@@ -199,10 +371,28 @@ namespace KnightDesk.Api.Controllers
         /// <param name="id">User ID</param>
         /// <returns>Existence result with response metadata</returns>
         [HttpGet("exists/{id}")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> UserExists(int id)
+        public async Task<GeneralResponseDTO<bool>> UserExists(int id)
         {
-            var result = await _userService.UserExistsAsync(id);
-            return result;
+            try
+            {
+                var result = await _userService.UserExistsAsync(id);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking user existence for ID {UserId}", id);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
         }
 
         /// <summary>
@@ -211,11 +401,28 @@ namespace KnightDesk.Api.Controllers
         /// <param name="username">Username</param>
         /// <returns>Existence result with response metadata</returns>
         [HttpGet("exists/username/{username}")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> UserExistsByUsername(string username)
+        public async Task<GeneralResponseDTO<bool>> UserExistsByUsername(string username)
         {
-            var result = await _userService.UserExistsByUsernameAsync(username);
-            return result;
-        }
+            try
+            {
+                var result = await _userService.UserExistsByUsernameAsync(username);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error checking user existence for username {Username}", username);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
+                    Data = false
+                };
+            }
+        } 
 
         /// <summary>
         /// Change user password
@@ -224,20 +431,27 @@ namespace KnightDesk.Api.Controllers
         /// <param name="passwordChangeRequest">Password change data</param>
         /// <returns>Change result with response metadata</returns>
         [HttpPut("{id}/change-password")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> ChangePassword(int id, [FromBody] ChangePasswordRequest passwordChangeRequest)
+        public async Task<GeneralResponseDTO<bool>> ChangePassword(int id, [FromBody] ChangePasswordRequest passwordChangeRequest)
         {
-            if (passwordChangeRequest == null)
+            try
             {
-                return BadRequest(new GeneralResponseDTO<bool>
+                var result = await _userService.ChangePasswordAsync(id, passwordChangeRequest.CurrentPassword, passwordChangeRequest.NewPassword);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error changing password for user ID {UserId}", id);
+                return new GeneralResponseDTO<bool>
                 {
-                    Code = (int)RESPONSE_CODE.BadRequest,
-                    Message = "Password change data is required",
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
                     Data = false
-                });
+                };
             }
-
-            var result = await _userService.ChangePasswordAsync(id, passwordChangeRequest.CurrentPassword, passwordChangeRequest.NewPassword);
-            return result;
         }
 
         /// <summary>
@@ -246,20 +460,27 @@ namespace KnightDesk.Api.Controllers
         /// <param name="resetRequest">Password reset data</param>
         /// <returns>Reset result with response metadata</returns>
         [HttpPost("reset-password")]
-        public async Task<ActionResult<GeneralResponseDTO<bool>>> ResetPassword([FromBody] ResetPasswordRequest resetRequest)
+        public async Task<GeneralResponseDTO<bool>> ResetPassword([FromBody] ResetPasswordRequest resetRequest)
         {
-            if (resetRequest == null)
+            try
             {
-                return BadRequest(new GeneralResponseDTO<bool>
+                var result = await _userService.ResetPasswordAsync(resetRequest.Username, resetRequest.NewPassword);
+                HttpContext.Response.StatusCode = result.Code;
+                return result;
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting password for username {Username}", resetRequest?.Username);
+                return new GeneralResponseDTO<bool>
                 {
-                    Code = (int)RESPONSE_CODE.BadRequest,
-                    Message = "Password reset data is required",
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    },
                     Data = false
-                });
+                };
             }
-
-            var result = await _userService.ResetPasswordAsync(resetRequest.Username, resetRequest.NewPassword);
-            return result;
         }
     }
 
