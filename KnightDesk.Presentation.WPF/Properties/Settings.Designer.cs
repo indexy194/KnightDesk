@@ -67,17 +67,5 @@ namespace KnightDesk.Presentation.WPF.Properties {
                 this["RememberMe"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string EncryptedPassword {
-            get {
-                return ((string)(this["EncryptedPassword"]));
-            }
-            set {
-                this["EncryptedPassword"] = value;
-            }
-        }
     }
 }

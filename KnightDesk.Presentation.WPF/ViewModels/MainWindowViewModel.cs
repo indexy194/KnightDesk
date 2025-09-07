@@ -133,10 +133,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             try
             {
                 // Clear saved user data
-                Properties.Settings.Default.Username = string.Empty;
                 Properties.Settings.Default.UserId = 0;
                 Properties.Settings.Default.RememberMe = false;
-                Properties.Settings.Default.EncryptedPassword = string.Empty;
                 Properties.Settings.Default.Save();
 
                 // Show login window

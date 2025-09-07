@@ -148,16 +148,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                         Properties.Settings.Default.UserId = result.Data.Id;
                         Properties.Settings.Default.RememberMe = _rememberMe;
                         
-                        // Lưu mật khẩu mã hóa nếu người dùng chọn ghi nhớ
-                        if (_rememberMe)
-                        {
-                            Properties.Settings.Default.EncryptedPassword = EncryptionService.EncryptPassword(_password);
-                        }
-                        else
-                        {
-                            Properties.Settings.Default.EncryptedPassword = string.Empty;
-                        }
-                        
                         Properties.Settings.Default.Save();
 
                         // Chuyển đến MainWindow
@@ -197,21 +187,13 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 
         #region Private Methods
 
-        private void LoadSavedCredentials()
+        private void LoadSavedCredentials() //if user dont want to remember password, just load username
         {
             try
             {
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.Username))
                 {
                     Username = Properties.Settings.Default.Username;
-                }
-                
-                RememberMe = Properties.Settings.Default.RememberMe;
-                
-                // Load encrypted password if remember me is enabled
-                if (RememberMe && !string.IsNullOrEmpty(Properties.Settings.Default.EncryptedPassword))
-                {
-                    Password = EncryptionService.DecryptPassword(Properties.Settings.Default.EncryptedPassword);
                 }
             }
             catch (Exception)
@@ -225,47 +207,45 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         {
             try
             {
-                // Debug info
-                System.Diagnostics.Debug.WriteLine($"TryAutoLogin - RememberMe: {Properties.Settings.Default.RememberMe}");
-                System.Diagnostics.Debug.WriteLine($"TryAutoLogin - UserId: {Properties.Settings.Default.UserId}");
-                System.Diagnostics.Debug.WriteLine($"TryAutoLogin - Username: {Properties.Settings.Default.Username}");
-                System.Diagnostics.Debug.WriteLine($"TryAutoLogin - HasEncryptedPassword: {!string.IsNullOrEmpty(Properties.Settings.Default.EncryptedPassword)}");
 
                 // Only auto login if we have all required saved credentials
                 if (Properties.Settings.Default.RememberMe && 
                     Properties.Settings.Default.UserId > 0 &&
-                    !string.IsNullOrEmpty(Properties.Settings.Default.Username) &&
-                    !string.IsNullOrEmpty(Properties.Settings.Default.EncryptedPassword))
+                    !string.IsNullOrEmpty(Properties.Settings.Default.Username))
                 {
-                    System.Diagnostics.Debug.WriteLine("TryAutoLogin - All conditions met, checking server connection...");
                     
                     // Check server connection first before auto login
                     ServerConnectionService.CheckServerAsync(Properties.Settings.Default.BaseUrl, new Action<bool>(isConnected =>
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
-                            System.Diagnostics.Debug.WriteLine($"TryAutoLogin - Server connected: {isConnected}");
-                            System.Diagnostics.Debug.WriteLine($"TryAutoLogin - Username loaded: {!string.IsNullOrEmpty(Username)}");
-                            System.Diagnostics.Debug.WriteLine($"TryAutoLogin - Password loaded: {!string.IsNullOrEmpty(Password)}");
-                            
-                            if (isConnected && !string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+                            if (isConnected && Properties.Settings.Default.UserId > 0 && !string.IsNullOrEmpty(Properties.Settings.Default.Username))
                             {
-                                System.Diagnostics.Debug.WriteLine("TryAutoLogin - Starting auto login...");
-                                // Auto login with saved credentials
-                                ExecuteLogin();
+                                // go to main window
+                                var mainWindow = new Views.MainWindow();
+                                mainWindow.Show();
+                                // close login window
+                                foreach (System.Windows.Window window in Application.Current.Windows)
+                                {
+                                    if (window is Views.LoginWindow)
+                                    {
+                                        window.Close();
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                RememberMe = false;
                             }
                         }));
                     }));
                 }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("TryAutoLogin - Conditions not met for auto login");
-                }
+                
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"TryAutoLogin - Exception: {ex.Message}");
-                // If auto login fails, just continue normally
+                RememberMe = false;
             }
         }
         

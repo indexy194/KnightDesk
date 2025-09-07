@@ -74,7 +74,6 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountApiService.cs" />
-    <Compile Include="Services\EncryptionService.cs" />
     <Compile Include="Services\IAccountApiService.cs" />
     <Compile Include="Services\ILoginService.cs" />
     <Compile Include="Services\IServerInfoService.cs" />
