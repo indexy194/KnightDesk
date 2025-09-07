@@ -72,6 +72,29 @@ namespace KnightDesk.Api.Controllers
                 };
             }
         }
+        //get list account favorite by user id
+        [HttpGet("favorites/user/{userId}")]
+        public async Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetFavoriteAccountsByUserId(int userId)
+        {
+            try
+            {
+                var accounts = await _accountService.GetFavoriteAccountsByUserId(userId);
+                return accounts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting favorite accounts for user {UserId}", userId);
+                return new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
+        }
         //add account 
         [HttpPost("add-account")]
         public async Task<GeneralResponseDTO<AccountDTO>> AddAccount([FromBody] CreateAccountDTO accountDto)

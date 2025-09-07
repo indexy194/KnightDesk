@@ -1,4 +1,4 @@
-using KnightDesk.Presentation.WPF.ViewModels;
+using KnightDesk.Presentation.WPF.ViewModels.Pages;
 using System.Windows.Controls;
 
 namespace KnightDesk.Presentation.WPF.Pages

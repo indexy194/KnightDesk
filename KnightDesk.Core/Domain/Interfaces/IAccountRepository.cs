@@ -7,7 +7,7 @@ namespace KnightDesk.Core.Domain.Interfaces
         Task<IEnumerable<Account>> GetAccountsByServerAsync(int serverNo);
         Task<IEnumerable<Account>> GetFavoriteAccountsAsync();
         Task<Account?> GetByUsernameAsync(string username);
-        Task<bool> IsUsernameExistsAsync(string username, int serverNo);
+        Task<bool> IsUsernameExistsAsync(string username);
         Task<IEnumerable<Account>> SearchAccountsAsync(string searchTerm);
         Task ToggleFavoriteAsync(int accountId);
         Task<IEnumerable<Account>> GetListAccountsByUserId(int userId);

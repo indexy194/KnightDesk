@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using KnightDesk.Presentation.WPF.ViewModels.Pages;
 
 namespace KnightDesk.Presentation.WPF.Pages
 {
@@ -10,6 +11,7 @@ namespace KnightDesk.Presentation.WPF.Pages
         public ManagerPage()
         {
             InitializeComponent();
+            DataContext = new ManagerPageViewModel();
         }
     }
 }

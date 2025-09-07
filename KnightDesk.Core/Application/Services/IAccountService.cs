@@ -1,5 +1,4 @@
 using KnightDesk.Core.Application.DTOs;
-using KnightDesk.Core.Domain.Entities;
 
 namespace KnightDesk.Core.Application.Services
 {
@@ -14,7 +13,9 @@ namespace KnightDesk.Core.Application.Services
         Task<GeneralResponseDTO<AccountDTO>> UpdateAccountAsync(UpdateAccountDTO account);
         Task<GeneralResponseDTO<bool>> DeleteAccountAsync(int id);
         Task<GeneralResponseDTO<bool>> ToggleFavoriteAsync(int accountId);
-        Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username, int serverNo);
+        Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username);
         Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetListAccountsByUserId(int userId);
+        //get account favorite by user id
+        Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetFavoriteAccountsByUserId(int userId);
     }
 }

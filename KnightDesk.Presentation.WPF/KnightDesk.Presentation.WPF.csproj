@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -57,6 +58,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="DTOs\AccountDTO.cs" />
+    <Compile Include="DTOs\GeneralResponseDTO.cs" />
+    <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\User.cs" />
@@ -70,14 +74,21 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountApiService.cs" />
+    <Compile Include="Services\EncryptionService.cs" />
     <Compile Include="Services\IAccountApiService.cs" />
-    <Compile Include="ViewModels\AccountManagementViewModel.cs" />
-    <Compile Include="ViewModels\AccountPageViewModel.cs" />
-    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="Services\ILoginService.cs" />
+    <Compile Include="Services\IServerInfoService.cs" />
+    <Compile Include="Services\LoginService.cs" />
+    <Compile Include="Services\ServerConnectionService.cs" />
+    <Compile Include="Services\ServerInfoService.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="ViewModels\ViewModels.Pages\AccountPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\ViewModels.Pages\ManagerPageViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\ServerConfigPageViewModel.cs" />
-    <Compile Include="ViewModels\SettingsPageViewModel.cs" />
+    <Compile Include="ViewModels\ViewModels.Pages\ServerConfigPageViewModel.cs" />
+    <Compile Include="ViewModels\ViewModels.Pages\SettingsPageViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Page Include="Views\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

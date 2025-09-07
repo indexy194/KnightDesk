@@ -56,24 +56,24 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             }
         }
 
-        public bool IsManagerActive 
-        { 
-            get { return ActiveMenu == "Manager"; } 
+        public bool IsManagerActive
+        {
+            get { return ActiveMenu == "Manager"; }
         }
 
-        public bool IsAccountsActive 
-        { 
-            get { return ActiveMenu == "Accounts"; } 
+        public bool IsAccountsActive
+        {
+            get { return ActiveMenu == "Accounts"; }
         }
 
-        public bool IsConfigActive 
-        { 
-            get { return ActiveMenu == "Config"; } 
+        public bool IsConfigActive
+        {
+            get { return ActiveMenu == "Config"; }
         }
 
-        public bool IsServerConfigActive 
-        { 
-            get { return ActiveMenu == "ServerConfig"; } 
+        public bool IsServerConfigActive
+        {
+            get { return ActiveMenu == "ServerConfig"; }
         }
 
         public UserControl ManagerPage
@@ -83,9 +83,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 
         public UserControl DisplayedPage
         {
-            get 
-            { 
-                return _currentPage ?? _managerPage; 
+            get
+            {
+                return _currentPage ?? _managerPage;
             }
         }
 
@@ -130,9 +130,34 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 
         private void ExecuteLogout()
         {
-            // TODO: Implement logout logic
-            System.Windows.MessageBox.Show("Logout functionality will be implemented here.", "Logout", 
-                System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            try
+            {
+                // Clear saved user data
+                Properties.Settings.Default.Username = string.Empty;
+                Properties.Settings.Default.UserId = 0;
+                Properties.Settings.Default.RememberMe = false;
+                Properties.Settings.Default.EncryptedPassword = string.Empty;
+                Properties.Settings.Default.Save();
+
+                // Show login window
+                var loginWindow = new Views.LoginWindow();
+                loginWindow.Show();
+
+                // Find and close the MainWindow
+                foreach (System.Windows.Window window in System.Windows.Application.Current.Windows)
+                {
+                    if (window is Views.MainWindow)
+                    {
+                        window.Close();
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi khi đăng xuất: {ex.Message}", "Lỗi",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -149,7 +174,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
         #endregion
     }
 }

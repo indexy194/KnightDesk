@@ -52,7 +52,7 @@
                 <!-- username -->
                 <StackPanel Margin="50 30 50 0" Orientation="Horizontal">
                     <fa:ImageAwesome Icon="User" Foreground="White" Width="20" VerticalAlignment="Center"/>
-                    <TextBox x:Name="tbUsername" 
+                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Height="35" 
                              Width="200"
                              FontSize="14" 
@@ -65,7 +65,8 @@
                 <!-- password -->
                 <StackPanel Margin="50 20 50 0" Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Key" Foreground="White" Width="20" VerticalAlignment="Center"/>
-                    <TextBox x:Name="tbPassword" 
+                    <PasswordBox x:Name="pbPassword"
+                                 Style="{StaticResource pwBox}"
                                 Height="35" 
                                 Width="200"
                                 FontSize="14" 
@@ -73,10 +74,78 @@
                                 Margin="15 0 0 0"
                                 BorderThickness="0" 
                                 Background="#5A5470" 
-                                Foreground="White" />
+                                Foreground="White"
+                                PasswordChanged="PasswordBox_PasswordChanged" />
                 </StackPanel>
+                
+                <!-- Remember Me Checkbox -->
+                <CheckBox IsChecked="{Binding RememberMe}"
+                          Content="Ghi nhớ đăng nhập"
+                          Foreground="White"
+                          FontSize="12"
+                          HorizontalAlignment="Center"
+                          Margin="0 15 0 0"
+                          Cursor="Hand">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="CheckBox">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border x:Name="checkBorder" 
+                                                    Width="16" 
+                                                    Height="16" 
+                                                    Background="#5A5470" 
+                                                    BorderBrush="White" 
+                                                    BorderThickness="1" 
+                                                    CornerRadius="2"
+                                                    Margin="0 0 8 0">
+                                                <fa:ImageAwesome x:Name="checkMark" 
+                                                                 Icon="Check" 
+                                                                 Foreground="White" 
+                                                                 Width="10" 
+                                                                 Height="10" 
+                                                                 Visibility="Collapsed"/>
+                                            </Border>
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="checkMark" Property="Visibility" Value="Visible"/>
+                                                <Setter TargetName="checkBorder" Property="Background" Value="#3E3A65"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="checkBorder" Property="BorderBrush" Value="#CCCCCC"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+                
+                <!-- Error Message -->
+                <TextBlock Text="{Binding ErrorMessage}" 
+                           Foreground="#FF6B6B" 
+                           FontSize="12" 
+                           HorizontalAlignment="Center" 
+                           Margin="0 10 0 0"
+                           TextWrapping="Wrap">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasError}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                
                 <!-- login button -->
-                <Button Content="Login"
+                <Button Command="{Binding LoginCommand}"
                         Width="100" 
                         Height="30" 
                         Margin="0 20 0 0" 
@@ -84,7 +153,34 @@
                         Style="{StaticResource loadButton}"
                         FontSize="15"
                         Cursor="Hand"
-                        Click="LoginButton_Click"/>
+                        IsEnabled="{Binding CanLogin}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Login">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="...">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
 

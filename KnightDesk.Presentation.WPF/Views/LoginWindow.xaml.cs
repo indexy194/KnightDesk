@@ -1,3 +1,4 @@
+using KnightDesk.Presentation.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,15 @@ namespace KnightDesk.Presentation.WPF.Views
     /// </summary>
     public partial class LoginWindow : Window
     {
+        private LoginViewModel _viewModel;
+
         public LoginWindow()
         {
             InitializeComponent();
+            _viewModel = new LoginViewModel();
+            DataContext = _viewModel;
         }
+
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -33,8 +39,13 @@ namespace KnightDesk.Presentation.WPF.Views
             //close the application
             Application.Current.Shutdown();
         }
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
+            if (_viewModel != null)
+            {
+                _viewModel.Password = ((PasswordBox)sender).Password;
+            }
         }
     }
 }

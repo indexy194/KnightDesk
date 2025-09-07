@@ -36,10 +36,10 @@ namespace KnightDesk.Infrastructure.Repositories
                 .FirstOrDefaultAsync(a => a.Username == username && !a.IsDeleted);
         }
 
-        public async Task<bool> IsUsernameExistsAsync(string username, int serverNo)
+        public async Task<bool> IsUsernameExistsAsync(string username)
         {
             return await _dbSet
-                .AnyAsync(a => a.Username == username && a.ServerInfo!.IndexServer == serverNo && !a.IsDeleted);
+                .AnyAsync(a => a.Username == username);
         }
 
         public async Task<IEnumerable<Account>> SearchAccountsAsync(string searchTerm)

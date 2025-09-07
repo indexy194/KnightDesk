@@ -46,5 +46,12 @@ namespace KnightDesk.Infrastructure.Repositories
                 .Include(s => s.Accounts)
                 .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
         }
+
+        public Task<ServerInfo> GetServerInforByServerNo(int serverNo)
+        {
+            return _dbSet
+                .Include(s => s.Accounts)
+                .FirstAsync(s => s.IndexServer == serverNo && !s.IsDeleted);
+        }
     }
 }

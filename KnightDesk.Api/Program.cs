@@ -42,8 +42,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 // Infrastructure Services
 builder.Services.AddScoped<DataSeedingService>();
 
-//Mapper
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+//AutoMapper Configuration - Scan Core assembly for all Profile classes
+builder.Services.AddAutoMapper(typeof(KnightDesk.Core.Application.Mappers.UserProfile).Assembly);
 
 var app = builder.Build();
 

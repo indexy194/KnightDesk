@@ -24,13 +24,13 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    
-                    <TextBlock Text="Account Management" 
+
+                    <TextBlock Text="List Account" 
                                Style="{StaticResource textLabel}" 
                                FontSize="18" 
                                FontWeight="SemiBold" 
                                VerticalAlignment="Center"/>
-                    
+
                     <!-- Search TextBox -->
                     <Border Grid.Column="1" 
                             Background="#2A2A2A" 
@@ -59,31 +59,6 @@
                             </TextBox.Style>
                         </TextBox>
                     </Border>
-                    
-                    <!-- Search Button -->
-                    <Button Grid.Column="2" 
-                            Style="{StaticResource topMenuButton}" 
-                            Width="30"
-                            Height="30"
-                            VerticalAlignment="Center"
-                            Command="{Binding SearchCommand}">
-                        <fa:ImageAwesome Icon="Search" 
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Style="{StaticResource whiteIcon}"
-                                         Width="10"
-                                         Height="10"/>
-                    </Button>
-
-                    <!-- Add New Account Button -->
-                    <Button Grid.Column="3" 
-                            Style="{StaticResource fillButton}" 
-                            Width="100"
-                            Height="30"
-                            Margin="10 0 0 0"
-                            VerticalAlignment="Center"
-                            Content="Add New"
-                            Command="{Binding AddNewAccountCommand}"/>
                 </Grid>
 
                 <!-- Header Row -->
@@ -125,7 +100,7 @@
                                                VerticalAlignment="Center" 
                                                Margin="10 0" 
                                                FontSize="11"/>
-                                    
+
                                     <TextBlock Text="{Binding CharacterName}" 
                                                Style="{StaticResource textLabel}" 
                                                VerticalAlignment="Center" 
@@ -194,7 +169,6 @@
                 </ScrollViewer>
             </StackPanel>
         </Border>
-
         <!-- Add/Edit Account Panel -->
         <Border Grid.Column="1" Style="{StaticResource border}" Margin="0 20 20 20">
             <StackPanel Margin="15">
@@ -221,13 +195,15 @@
                 <TextBlock Text="Character Name" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
                 <TextBox Text="{Binding CurrentAccount.CharacterName, UpdateSourceTrigger=PropertyChanged}" 
                          Height="30" 
-                         Padding="10 0"/>
+                         Padding="10 0"
+                         IsEnabled="{Binding IsCharacterNameEnabled}"/>
 
                 <!-- Index Character -->
                 <TextBlock Text="Index Character" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
-                <TextBox Text="{Binding CurrentAccount.IndexCharacter, UpdateSourceTrigger=PropertyChanged}" 
-                         Height="30" 
-                         Padding="10 0"/>
+                <ComboBox ItemsSource="{Binding CharacterIndexOptions}"
+                          SelectedItem="{Binding SelectedCharacterIndex}"
+                          DisplayMemberPath="DisplayText"
+                          Height="30"/>
 
                 <!-- Server Selection -->
                 <TextBlock Text="Server" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
@@ -250,7 +226,7 @@
                             Height="35"
                             Margin="0 0 10 0"
                             Command="{Binding SaveAccountCommand}"/>
-                    
+
                     <Button Content="Cancel" 
                             Style="{StaticResource button}" 
                             Width="80" 
@@ -259,5 +235,6 @@
                 </StackPanel>
             </StackPanel>
         </Border>
+
     </Grid>
 </UserControl>

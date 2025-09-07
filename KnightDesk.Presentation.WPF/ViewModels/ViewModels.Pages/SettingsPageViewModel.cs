@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace KnightDesk.Presentation.WPF.ViewModels
+namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 {
     public class SettingsPageViewModel : INotifyPropertyChanged
     {

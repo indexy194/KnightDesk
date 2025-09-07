@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace KnightDesk.Presentation.WPF.ViewModels
+namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 {
     public class ServerConfigPageViewModel : INotifyPropertyChanged
     {
@@ -125,7 +125,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 {
                     Id = server.Id,
                     Name = server.Name,
-                    IndexServer = server.IndexServer,
+                    ServerNo = server.ServerNo,
                     Description = server.Description,
                     CreatedAt = server.CreatedAt,
                     UpdatedAt = server.UpdatedAt,
@@ -202,7 +202,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         {
             return CurrentServer != null && 
                    !string.IsNullOrEmpty(CurrentServer.Name) && 
-                   CurrentServer.IndexServer > 0;
+                   CurrentServer.ServerNo > 0;
         }
 
         private void ExecuteCancel()
@@ -223,9 +223,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             {
                 // Mock server data - replace with actual API call when available
                 Servers.Clear();
-                Servers.Add(new ServerInfo { Id = 1, Name = "Game Server 1", IndexServer = 1, Description = "Main game server for beginners", AccountCount = 5, CreatedAt = DateTime.Now.AddDays(-30) });
-                Servers.Add(new ServerInfo { Id = 2, Name = "Game Server 2", IndexServer = 2, Description = "Advanced game server", AccountCount = 3, CreatedAt = DateTime.Now.AddDays(-20) });
-                Servers.Add(new ServerInfo { Id = 3, Name = "Game Server 3", IndexServer = 3, Description = "PvP focused server", AccountCount = 8, CreatedAt = DateTime.Now.AddDays(-10) });
+                Servers.Add(new ServerInfo { Id = 1, Name = "Game Server 1", ServerNo = 1, Description = "Main game server for beginners", AccountCount = 5, CreatedAt = DateTime.Now.AddDays(-30) });
+                Servers.Add(new ServerInfo { Id = 2, Name = "Game Server 2", ServerNo = 2, Description = "Advanced game server", AccountCount = 3, CreatedAt = DateTime.Now.AddDays(-20) });
+                Servers.Add(new ServerInfo { Id = 3, Name = "Game Server 3", ServerNo = 3, Description = "PvP focused server", AccountCount = 8, CreatedAt = DateTime.Now.AddDays(-10) });
 
                 FilterServers();
             }
@@ -251,7 +251,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 foreach (ServerInfo server in Servers)
                 {
                     if (server.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        server.IndexServer.ToString().IndexOf(SearchText) >= 0)
+                        server.ServerNo.ToString().IndexOf(SearchText) >= 0)
                     {
                         FilteredServers.Add(server);
                     }

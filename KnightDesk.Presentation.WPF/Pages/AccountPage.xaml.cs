@@ -1,4 +1,4 @@
-using KnightDesk.Presentation.WPF.ViewModels;
+using KnightDesk.Presentation.WPF.ViewModels.Pages;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,7 +19,7 @@ namespace KnightDesk.Presentation.WPF.Pages
         {
             if (DataContext is AccountPageViewModel viewModel)
             {
-                //viewModel.CurrentAccount.Password = ((PasswordBox)sender).Password;
+                viewModel.CurrentPassword = ((PasswordBox)sender).Password;
             }
         }
     }

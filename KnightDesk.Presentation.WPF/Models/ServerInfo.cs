@@ -6,7 +6,7 @@ namespace KnightDesk.Presentation.WPF.Models
     public class ServerInfo : INotifyPropertyChanged
     {
         private int _id;
-        private int _indexServer;
+        private int _serverNo;
         private string _name = string.Empty;
         private string _description = string.Empty;
         private int _accountCount;
@@ -24,13 +24,13 @@ namespace KnightDesk.Presentation.WPF.Models
             }
         }
 
-        public int IndexServer
+        public int ServerNo
         {
-            get => _indexServer;
+            get => _serverNo;
             set
             {
-                _indexServer = value;
-                OnPropertyChanged(nameof(IndexServer));
+                _serverNo = value;
+                OnPropertyChanged(nameof(ServerNo));
             }
         }
 

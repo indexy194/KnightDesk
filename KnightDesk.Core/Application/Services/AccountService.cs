@@ -59,7 +59,12 @@ namespace KnightDesk.Core.Application.Services
                         Data = null
                     };
                 }
-                return new GeneralResponseDTO<AccountDTO?>(_mapper.Map<AccountDTO>(account));
+                return new GeneralResponseDTO<AccountDTO?>
+                {
+                    Code = (int)RESPONSE_CODE.OK,
+                    Message = "Account retrieved successfully",
+                    Data = _mapper.Map<AccountDTO>(account)
+                };
             }
             catch (Exception ex)
             {
@@ -161,7 +166,7 @@ namespace KnightDesk.Core.Application.Services
                     Username = account.Username,
                     Password = account.Password,
                     IndexCharacter = account.IndexCharacter,
-                    IndexServer = account.IndexServer
+                    ServerInfoId = account.ServerInfoId
                 };
                 var validationResult = ValidateAccount(validateAccount);
                 if (!validationResult)
@@ -182,15 +187,24 @@ namespace KnightDesk.Core.Application.Services
                         Message = $"User with ID {account.UserId} does not exist"
                     };
                 }
-
+                //Check if server exists
+                var checkServer = await _unitOfWork.ServerInfos.GetByIdAsync(account.ServerInfoId);
+                if (checkServer == null)
+                {
+                    return new GeneralResponseDTO<AccountDTO>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = $"Server with ID {account.ServerInfoId} does not exist"
+                    };
+                }
                 // Check if username already exists for this server
-                var usernameExistsResult = await IsUsernameExistsAsync(account.Username!, account.IndexServer);
+                var usernameExistsResult = await IsUsernameExistsAsync(account.Username!);
                 if (usernameExistsResult.Data)
                 {
                     return new GeneralResponseDTO<AccountDTO>
                     {
                         Code = (int)RESPONSE_CODE.BadRequest,
-                        Message = $"Username '{account.Username}' already exists for server {account.IndexServer}"
+                        Message = $"Username '{account.Username}' already exists"
                     };
                 }
                 var entry = _mapper.Map<Account>(account);
@@ -226,7 +240,7 @@ namespace KnightDesk.Core.Application.Services
                     Username = account.Username,
                     Password = account.Password,
                     IndexCharacter = account.IndexCharacter,
-                    IndexServer = account.IndexServer
+                    ServerInfoId = account.ServerInfoId
                 };
                 var validationResult = ValidateAccount(validateAccount);
                 if (!validationResult)
@@ -237,7 +251,26 @@ namespace KnightDesk.Core.Application.Services
                         Message = "Invalid account data"
                     };
                 }
-
+                //check if user exists
+                var checkUser = await _unitOfWork.Users.GetByIdAsync(account.UserId);
+                if (checkUser == null)
+                {
+                    return new GeneralResponseDTO<AccountDTO>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = $"User with ID {account.UserId} does not exist"
+                    };
+                }
+                //check if server exists
+                var checkServer = await _unitOfWork.ServerInfos.GetByIdAsync(account.ServerInfoId);
+                if (checkServer == null)
+                {
+                    return new GeneralResponseDTO<AccountDTO>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = $"Server with ID {account.ServerInfoId} does not exist"
+                    };
+                } 
                 // Check if account exists
                 var existingAccount = await _unitOfWork.Accounts.GetByIdAsync(account.Id);
                 if (existingAccount == null)
@@ -248,15 +281,23 @@ namespace KnightDesk.Core.Application.Services
                         Message = $"Account with ID {account.Id} not found"
                     };
                 }
-                var entry = _mapper.Map<Account>(account);
-                await _unitOfWork.Accounts.UpdateAsync(entry);
+                
+                // Approach 1: Map DTO to existing tracked entity (Best for large entities)
+                // This preserves EF tracking and Id while updating all other properties
+                _mapper.Map(account, existingAccount);
+
+                await _unitOfWork.Accounts.UpdateAsync(existingAccount);
                 await _unitOfWork.SaveChangesAsync();
 
+                // Get the updated account with ServerInfo included
+                
                 _logger.LogInformation("Account updated successfully: {AccountId}", account.Id);
+                var updatedAccount = await _unitOfWork.Accounts.GetByIdAsync(account.Id);
                 return new GeneralResponseDTO<AccountDTO>
                 {
+                    Code = (int)RESPONSE_CODE.OK,
                     Message = "Account updated successfully",
-                    Data = _mapper.Map<AccountDTO>(account)
+                    Data = _mapper.Map<AccountDTO>(updatedAccount)
                 };
             }
             catch (Exception ex)
@@ -364,7 +405,7 @@ namespace KnightDesk.Core.Application.Services
                 return false;
             }
 
-            if (account.IndexServer < 0)
+            if (account.ServerInfoId < 0)
             {
                 return false;
             }
@@ -377,7 +418,7 @@ namespace KnightDesk.Core.Application.Services
             return true;
         }
 
-        public async Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username, int serverNo)
+        public async Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username)
         {
             try
             {
@@ -391,7 +432,7 @@ namespace KnightDesk.Core.Application.Services
                     };
                 }
 
-                var exists = await _unitOfWork.Accounts.IsUsernameExistsAsync(username, serverNo);
+                var exists = await _unitOfWork.Accounts.IsUsernameExistsAsync(username);
                 return new GeneralResponseDTO<bool>
                 {
                     Message = exists ? "Username already exists" : "Username is available",
@@ -400,7 +441,7 @@ namespace KnightDesk.Core.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error checking username existence {Username} for server {ServerNo}", username, serverNo);
+                _logger.LogError(ex, "Error checking username existence {Username}", username);
                 return new GeneralResponseDTO<bool>
                 {
                     Code = (int)RESPONSE_CODE.InternalServerError,
@@ -434,6 +475,35 @@ namespace KnightDesk.Core.Application.Services
                 {
                     Code = (int)RESPONSE_CODE.InternalServerError,
                     Message = "An error occurred while retrieving user accounts"
+                };
+            }
+        }
+
+        public async Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetFavoriteAccountsByUserId(int userId)
+        {
+            try
+            {
+                if(userId < 0) { 
+                    return new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = "Invalid user ID",
+                        Data = new List<AccountDTO>()
+                    };
+                }
+                var accounts = await _unitOfWork.Accounts.GetListAccountsByUserId(userId);
+                //filter only favorite accounts
+                var result = accounts.Where(a => a.IsFavorite).ToList();
+                return new GeneralResponseDTO<IEnumerable<AccountDTO>>(_mapper.Map<IEnumerable<AccountDTO>>(result));
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error getting favorite accounts by userId {UserId}", userId);
+                return new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                {
+                    Code = (int)RESPONSE_CODE.InternalServerError,
+                    Message = "An error occurred while retrieving favorite user accounts"
                 };
             }
         }
