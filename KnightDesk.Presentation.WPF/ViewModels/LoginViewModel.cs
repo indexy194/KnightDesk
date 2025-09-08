@@ -115,28 +115,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             IsLoading = true;
             ErrorMessage = string.Empty;
 
-            // Check server connection first using new DTO approach
-            var connectionRequest = new ServerConnectionRequestDTO
-            {
-                BaseUrl = Properties.Settings.Default.BaseUrl,
-                TimeoutMs = 5000
-            };
-
-            ServerConnectionServices.CheckServerAsync(connectionRequest, connectionResponse =>
-            {
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    if (!connectionResponse.IsReachable)
-                    {
-                        IsLoading = false;
-                        ErrorMessage = "Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.";
-                        return;
-                    }
-
-                    // Server is reachable, proceed with login using BackgroundWorker
-                    DoLogin();
-                }));
-            });
+            DoLogin();
         }
 
         private void DoLogin()
@@ -223,8 +202,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 // First, check network connectivity to server
                 var connectionRequest = new ServerConnectionRequestDTO
                 {
-                    BaseUrl = Properties.Settings.Default.BaseUrl,
-                    TimeoutMs = 100
+                    BaseUrl = @"http://localhost:5204",
+                    TimeoutMs = 3000
                 };
 
                 ServerConnectionServices.CheckServerAsync(connectionRequest, connectionResponse =>
@@ -257,7 +236,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                                 }
                             }
                         }
-                        // If no saved credentials, user stays on login page for normal login
+                       
                     }));
                 });
             }

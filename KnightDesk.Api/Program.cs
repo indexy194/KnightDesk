@@ -13,6 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add Health Checks
+builder.Services.AddHealthChecks();
+
 // Add CORS for WPF client
 builder.Services.AddCors(options =>
 {
@@ -57,6 +60,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowWPF");
 app.UseHttpsRedirection();
+
+// Map Health Check endpoint
+app.MapHealthChecks("/health");
+
 app.MapControllers();
 
 // Initialize database

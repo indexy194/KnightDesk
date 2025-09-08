@@ -53,7 +53,6 @@
                     <!-- Change to Icon-->
                     <TextBlock Text="KnightDesk" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#FFFFFF"/>
                 </StackPanel>
-
                 <Button Command="{Binding NavigateToManagerCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
@@ -194,8 +193,17 @@
             <Grid Grid.Column="1">
                 <!-- Content Area - Show either CurrentPage or ManagerPage -->
                 <ContentPresenter Content="{Binding DisplayedPage}"/>
-            </Grid>
+                <Button  Command="{Binding CloseAppCommand}"
+                         Background="Transparent"
+                         Width="20" 
+                         HorizontalAlignment="Right" 
+                         BorderThickness="0"
+                         VerticalAlignment="Top"
+                         Margin="0 10 10 0" >
+                    <fa:ImageAwesome Icon="Close" Foreground="White"/>
+                </Button>
 
+            </Grid>
         </Grid>
     </Grid>
 </Window>

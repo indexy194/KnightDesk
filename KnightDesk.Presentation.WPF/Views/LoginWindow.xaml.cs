@@ -28,12 +28,6 @@ namespace KnightDesk.Presentation.WPF.Views
             DataContext = _viewModel;
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
-        }
-
         private void CloseButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //close the application

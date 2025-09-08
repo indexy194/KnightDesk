@@ -22,38 +22,30 @@ namespace KnightDesk.Presentation.WPF.Services
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                // Extract hostname/IP from BaseUrl
-                var uri = new Uri(request.BaseUrl);
-                var hostName = uri.Host;
+                var httpRequest = WebRequest.Create(request.BaseUrl + "/health");
+                httpRequest.Method = "GET";
+                httpRequest.Timeout = request.TimeoutMs;
 
-                // Use Ping to check network connectivity
-                using (var ping = new Ping())
+
+                using (var response = (HttpWebResponse)httpRequest.GetResponse())
                 {
-                    var pingOptions = new PingOptions(64, true);
-                    var buffer = new byte[32]; // Standard ping buffer size
-                    
-                    var pingReply = ping.Send(hostName, request.TimeoutMs, buffer, pingOptions);
                     stopwatch.Stop();
-
-                    if (pingReply.Status == IPStatus.Success)
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
                         return new ServerConnectionResponseDTO
                         {
                             IsReachable = true,
-                            Message = string.Format("Server {0} is reachable via network", hostName),
-                            ResponseTimeMs = (int)pingReply.RoundtripTime
-                        };
-                    }
-                    else
-                    {
-                        return new ServerConnectionResponseDTO
-                        {
-                            IsReachable = false,
-                            Message = string.Format("Server {0} is not reachable: {1}", hostName, pingReply.Status),
+                            Message = "Server is online",
                             ResponseTimeMs = (int)stopwatch.ElapsedMilliseconds
                         };
                     }
                 }
+                return new ServerConnectionResponseDTO
+                {
+                    IsReachable = false,
+                    Message = "Server returned non-200",
+                    ResponseTimeMs = (int)stopwatch.ElapsedMilliseconds
+                };
             }
             catch (Exception ex)
             {
@@ -61,7 +53,7 @@ namespace KnightDesk.Presentation.WPF.Services
                 return new ServerConnectionResponseDTO
                 {
                     IsReachable = false,
-                    Message = string.Format("Network connection error: {0}", ex.Message),
+                    Message = $"Server not reachable: {ex.Message}",
                     ResponseTimeMs = (int)stopwatch.ElapsedMilliseconds
                 };
             }

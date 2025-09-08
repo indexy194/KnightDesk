@@ -25,6 +25,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             NavigateToConfigCommand = new RelayCommand(new Action(() => NavigateToPage("Config")));
             NavigateToServerConfigCommand = new RelayCommand(new Action(() => NavigateToPage("ServerConfig")));
             LogoutCommand = new RelayCommand(new Action(ExecuteLogout));
+            CloseAppCommand = new RelayCommand(new Action(() => System.Windows.Application.Current.Shutdown()));
 
             // Set default page
             NavigateToPage("Manager");
@@ -99,6 +100,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         public ICommand NavigateToConfigCommand { get; private set; }
         public ICommand NavigateToServerConfigCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
+
+        public ICommand CloseAppCommand { get; private set; }
 
         #endregion
 
