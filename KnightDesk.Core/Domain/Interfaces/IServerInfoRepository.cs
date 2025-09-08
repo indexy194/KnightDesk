@@ -4,9 +4,9 @@ namespace KnightDesk.Core.Domain.Interfaces
 {
     public interface IServerInfoRepository : IRepository<ServerInfo>
     {
-        Task<ServerInfo?> GetByServerNoAsync(int serverNo);
-        Task<ServerInfo> GetServerInforByServerNo(int serverNo);
+        Task<ServerInfo?> GetByIndexServerAsync(int indexServer);
+        Task<ServerInfo> GetServerInfoByIndexServerAsync(int indexServer);
         Task<IEnumerable<ServerInfo>> GetActiveServersAsync();
-        Task<bool> IsServerNoExistsAsync(int serverNo);
+        Task<bool> IsIndexServerExistsAsync(int indexServer);
     }
 }

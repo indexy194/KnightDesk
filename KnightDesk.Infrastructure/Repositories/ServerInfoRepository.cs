@@ -11,11 +11,11 @@ namespace KnightDesk.Infrastructure.Repositories
         {
         }
 
-        public async Task<ServerInfo?> GetByServerNoAsync(int serverNo)
+        public async Task<ServerInfo?> GetByIndexServerAsync(int indexServer)
         {
             return await _dbSet
                 .Include(s => s.Accounts)
-                .FirstOrDefaultAsync(s => s.IndexServer == serverNo && !s.IsDeleted);
+                .FirstOrDefaultAsync(s => s.IndexServer == indexServer && !s.IsDeleted);
         }
 
         public async Task<IEnumerable<ServerInfo>> GetActiveServersAsync()
@@ -26,15 +26,16 @@ namespace KnightDesk.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> IsServerNoExistsAsync(int serverNo)
+        public async Task<bool> IsIndexServerExistsAsync(int indexServer)
         {
             return await _dbSet
-                .AnyAsync(s => s.IndexServer == serverNo && !s.IsDeleted);
+                .AnyAsync(s => s.IndexServer == indexServer && !s.IsDeleted);
         }
 
         public override async Task<IEnumerable<ServerInfo>> GetAllAsync()
         {
             return await _dbSet
+                .Include(s => s.Accounts)
                 .Where(s => !s.IsDeleted)
                 .OrderBy(s => s.IndexServer)
                 .ToListAsync();
@@ -47,11 +48,11 @@ namespace KnightDesk.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
         }
 
-        public Task<ServerInfo> GetServerInforByServerNo(int serverNo)
+        public Task<ServerInfo> GetServerInfoByIndexServerAsync(int indexServer)
         {
             return _dbSet
                 .Include(s => s.Accounts)
-                .FirstAsync(s => s.IndexServer == serverNo && !s.IsDeleted);
+                .FirstAsync(s => s.IndexServer == indexServer && !s.IsDeleted);
         }
     }
 }

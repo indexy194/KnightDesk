@@ -1,25 +1,39 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Threading;
 using System.Web.Script.Serialization;
 using KnightDesk.Presentation.WPF.DTOs;
 
 namespace KnightDesk.Presentation.WPF.Services
 {
-    public class AccountApiService : IAccountApiService
+    public interface IAccountServices
+    {
+        void GetAllAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+        void GetAccountByIdAsync(int id, Action<GeneralResponseDTO<AccountDTO>> callback);
+        void GetAccountsByUserIdAsync(int userId, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+        void SearchAccountsAsync(string searchText, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+        void AddAccountAsync(CreateAccountDTO account, Action<GeneralResponseDTO<AccountDTO>> callback);
+        void UpdateAccountAsync(UpdateAccountDTO account, Action<GeneralResponseDTO<AccountDTO>> callback);
+        void DeleteAccountAsync(int id, Action<GeneralResponseDTO<bool>> callback);
+        void ToggleFavoriteAsync(int id, Action<GeneralResponseDTO<bool>> callback);
+        void GetFavoriteAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+        void GetFavoriteAccountsByUserIdAsync(int userId, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+    }
+    public class AccountServices : IAccountServices
     {
         private readonly string _baseUrl;
 
-        public AccountApiService()
+        public AccountServices()
         {
             _baseUrl = Properties.Settings.Default.BaseUrl;
         }
 
         public void GetAllAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -35,25 +49,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<IEnumerable<AccountDTO>>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    e.Result = new GeneralResponseDTO<IEnumerable<AccountDTO>>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = new List<AccountDTO>()
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void GetAccountByIdAsync(int id, Action<GeneralResponseDTO<AccountDTO>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -69,25 +90,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<AccountDTO>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<AccountDTO>
+                    e.Result = new GeneralResponseDTO<AccountDTO>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = null
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<AccountDTO>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void GetAccountsByUserIdAsync(int userId, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -103,25 +131,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<IEnumerable<AccountDTO>>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    e.Result = new GeneralResponseDTO<IEnumerable<AccountDTO>>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = new List<AccountDTO>()
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void SearchAccountsAsync(string searchText, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -138,25 +173,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<IEnumerable<AccountDTO>>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    e.Result = new GeneralResponseDTO<IEnumerable<AccountDTO>>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = new List<AccountDTO>()
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void AddAccountAsync(CreateAccountDTO account, Action<GeneralResponseDTO<AccountDTO>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -179,25 +221,32 @@ namespace KnightDesk.Presentation.WPF.Services
                         {
                             var responseContent = streamReader.ReadToEnd();
                             var result = serializer.Deserialize<GeneralResponseDTO<AccountDTO>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<AccountDTO>
+                    e.Result = new GeneralResponseDTO<AccountDTO>
                     {
-                        Code = 500,
+                        Code = (int)RESPONSE_CODE.InternalServerError,
                         Message = "Error: " + ex.Message,
                         Data = null
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<AccountDTO>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void UpdateAccountAsync(UpdateAccountDTO account, Action<GeneralResponseDTO<AccountDTO>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -220,25 +269,32 @@ namespace KnightDesk.Presentation.WPF.Services
                         {
                             var responseContent = streamReader.ReadToEnd();
                             var result = serializer.Deserialize<GeneralResponseDTO<AccountDTO>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<AccountDTO>
+                    e.Result = new GeneralResponseDTO<AccountDTO>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = null
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<AccountDTO>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void DeleteAccountAsync(int id, Action<GeneralResponseDTO<bool>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -254,25 +310,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<bool>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<bool>
+                    e.Result = new GeneralResponseDTO<bool>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = false
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<bool>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void ToggleFavoriteAsync(int id, Action<GeneralResponseDTO<bool>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -289,25 +352,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<bool>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<bool>
+                    e.Result = new GeneralResponseDTO<bool>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = false
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<bool>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void GetFavoriteAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -323,25 +393,32 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<IEnumerable<AccountDTO>>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    e.Result = new GeneralResponseDTO<IEnumerable<AccountDTO>>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = new List<AccountDTO>()
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
 
         public void GetFavoriteAccountsByUserIdAsync(int userId, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
             {
                 try
                 {
@@ -357,20 +434,26 @@ namespace KnightDesk.Presentation.WPF.Services
                             var responseContent = streamReader.ReadToEnd();
                             var serializer = new JavaScriptSerializer();
                             var result = serializer.Deserialize<GeneralResponseDTO<IEnumerable<AccountDTO>>>(responseContent);
-                            callback(result);
+                            e.Result = result;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    callback(new GeneralResponseDTO<IEnumerable<AccountDTO>>
+                    e.Result = new GeneralResponseDTO<IEnumerable<AccountDTO>>
                     {
                         Code = 500,
                         Message = "Error: " + ex.Message,
                         Data = new List<AccountDTO>()
-                    });
+                    };
                 }
-            }));
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
         }
     }
 }

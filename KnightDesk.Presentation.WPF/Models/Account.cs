@@ -1,9 +1,8 @@
 using System;
-using System.ComponentModel;
 
 namespace KnightDesk.Presentation.WPF.Models
 {
-    public class Account : INotifyPropertyChanged
+    public class Account : BaseModel
     {
         private int _id;
         private string _username = string.Empty;
@@ -12,6 +11,8 @@ namespace KnightDesk.Presentation.WPF.Models
         private int _indexCharacter;
         private bool _isFavorite;
         private int _serverInfoId;
+        private int _indexServer;
+        private string _serverName = string.Empty;
         private int _userId;
         private DateTime? _createdAt;
         private DateTime? _updatedAt;
@@ -20,118 +21,77 @@ namespace KnightDesk.Presentation.WPF.Models
         public int Id
         {
             get => _id;
-            set
-            {
-                _id = value;
-                OnPropertyChanged(nameof(Id));
-            }
+            set => SetProperty(ref _id, value, nameof(Id));
         }
 
         public string Username
         {
             get => _username;
-            set
-            {
-                _username = value;
-                OnPropertyChanged(nameof(Username));
-            }
+            set => SetProperty(ref _username, value, nameof(Username));
         }
 
         public string CharacterName
         {
             get => _characterName;
-            set
-            {
-                _characterName = value;
-                OnPropertyChanged(nameof(CharacterName));
-            }
+            set => SetProperty(ref _characterName, value, nameof(CharacterName));
         }
 
         public string Password
         {
             get => _password;
-            set
-            {
-                _password = value;
-                OnPropertyChanged(nameof(Password));
-            }
+            set => SetProperty(ref _password, value, nameof(Password));
         }
 
         public int IndexCharacter
         {
             get => _indexCharacter;
-            set
-            {
-                _indexCharacter = value;
-                OnPropertyChanged(nameof(IndexCharacter));
-            }
+            set => SetProperty(ref _indexCharacter, value, nameof(IndexCharacter));
         }
 
         public int ServerInfoId
         {
             get => _serverInfoId;
-            set
-            {
-                _serverInfoId = value;
-                OnPropertyChanged(nameof(ServerInfoId));
-            }
+            set => SetProperty(ref _serverInfoId, value, nameof(ServerInfoId));
+        }
+        public int IndexServer
+        {
+            get => _indexServer;
+            set => SetProperty(ref _indexServer, value, nameof(IndexServer));
+        }
+        public string ServerName
+        {
+            get => _serverName;
+            set => SetProperty(ref _serverName, value, nameof(ServerName));
         }
 
         public int UserId
         {
             get => _userId;
-            set
-            {
-                _userId = value;
-                OnPropertyChanged(nameof(UserId));
-            }
+            set => SetProperty(ref _userId, value, nameof(UserId));
         }
 
         public bool IsFavorite
         {
             get => _isFavorite;
-            set
-            {
-                _isFavorite = value;
-                OnPropertyChanged(nameof(IsFavorite));
-            }
+            set => SetProperty(ref _isFavorite, value, nameof(IsFavorite));
         }
 
         public DateTime? CreatedAt
         {
             get => _createdAt;
-            set
-            {
-                _createdAt = value;
-                OnPropertyChanged(nameof(CreatedAt));
-            }
+            set => SetProperty(ref _createdAt, value, nameof(CreatedAt));
         }
 
         public DateTime? UpdatedAt
         {
             get => _updatedAt;
-            set
-            {
-                _updatedAt = value;
-                OnPropertyChanged(nameof(UpdatedAt));
-            }
+            set => SetProperty(ref _updatedAt, value, nameof(UpdatedAt));
         }
 
         public bool IsDeleted
         {
             get => _isDeleted;
-            set
-            {
-                _isDeleted = value;
-                OnPropertyChanged(nameof(IsDeleted));
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            set => SetProperty(ref _isDeleted, value, nameof(IsDeleted));
         }
     }
 }

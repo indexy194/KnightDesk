@@ -2,7 +2,6 @@ using KnightDesk.Presentation.WPF.DTOs;
 using KnightDesk.Presentation.WPF.Services;
 using System;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -10,7 +9,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        private readonly ILoginService _loginService;
+        private readonly ILoginServices _loginService;
         private string _username;
         private string _password;
         private bool _isLoading;
@@ -19,15 +18,15 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 
         public LoginViewModel()
         {
-            _loginService = new LoginService();
-            
+            _loginService = new LoginServices();
+
             // Initialize commands - .NET 3.5 compatible
             LoginCommand = new RelayCommand(new Action(ExecuteLogin), new Func<bool>(() => CanExecuteLogin()));
             CloseCommand = new RelayCommand(new Action(ExecuteClose));
-            
+
             // Load saved credentials if available
             LoadSavedCredentials();
-            
+
             // Try auto login if credentials are saved
             TryAutoLogin();
         }
@@ -116,46 +115,60 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             IsLoading = true;
             ErrorMessage = string.Empty;
 
-            // Check server connection first
-            ServerConnectionService.CheckServerAsync(Properties.Settings.Default.BaseUrl, new Action<bool>(isConnected =>
+            // Check server connection first using new DTO approach
+            var connectionRequest = new ServerConnectionRequestDTO
+            {
+                BaseUrl = Properties.Settings.Default.BaseUrl,
+                TimeoutMs = 5000
+            };
+
+            ServerConnectionServices.CheckServerAsync(connectionRequest, connectionResponse =>
             {
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    if (!isConnected)
+                    if (!connectionResponse.IsReachable)
                     {
                         IsLoading = false;
                         ErrorMessage = "Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.";
                         return;
                     }
 
-                    // Server is reachable, proceed with login
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(DoLogin));
+                    // Server is reachable, proceed with login using BackgroundWorker
+                    DoLogin();
                 }));
-            }));
+            });
         }
 
-        private void DoLogin(object state)
+        private void DoLogin()
         {
-            _loginService.LoginAsync(_username, _password, new Action<GeneralResponseDTO<LoginResponseDTO>>(result =>
+            // Create login request DTO
+            var loginRequest = new LoginRequestDTO
             {
-                // Switch back to UI thread
+                Username = _username,
+                Password = _password
+            };
+
+            // Use the updated LoginService with DTO (LoginService already uses BackgroundWorker internally)
+            _loginService.LoginAsync(loginRequest, result =>
+            {
+                // LoginService's BackgroundWorker automatically marshals this callback to UI thread
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    if (result.Data.IsSuccess)
+                    if (result.Code == (int)RESPONSE_CODE.OK)
                     {
                         // Lưu thông tin user
                         Properties.Settings.Default.Username = result.Data.Username;
                         Properties.Settings.Default.UserId = result.Data.Id;
                         Properties.Settings.Default.RememberMe = _rememberMe;
-                        
+
                         Properties.Settings.Default.Save();
 
                         // Chuyển đến MainWindow
                         var mainWindow = new Views.MainWindow();
                         mainWindow.Show();
-                        
+
                         // Đóng LoginWindow
-                        foreach (System.Windows.Window window in Application.Current.Windows)
+                        foreach (Window window in Application.Current.Windows)
                         {
                             if (window is Views.LoginWindow)
                             {
@@ -170,7 +183,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                     }
                     IsLoading = false;
                 }));
-            }));
+            });
         }
 
         private bool CanExecuteLogin()
@@ -202,53 +215,60 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 Password = string.Empty;
             }
         }
-        
+
         private void TryAutoLogin()
         {
             try
             {
-
-                // Only auto login if we have all required saved credentials
-                if (Properties.Settings.Default.RememberMe && 
-                    Properties.Settings.Default.UserId > 0 &&
-                    !string.IsNullOrEmpty(Properties.Settings.Default.Username))
+                // First, check network connectivity to server
+                var connectionRequest = new ServerConnectionRequestDTO
                 {
-                    
-                    // Check server connection first before auto login
-                    ServerConnectionService.CheckServerAsync(Properties.Settings.Default.BaseUrl, new Action<bool>(isConnected =>
+                    BaseUrl = Properties.Settings.Default.BaseUrl,
+                    TimeoutMs = 100
+                };
+
+                ServerConnectionServices.CheckServerAsync(connectionRequest, connectionResponse =>
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        if (!connectionResponse.IsReachable)
                         {
-                            if (isConnected && Properties.Settings.Default.UserId > 0 && !string.IsNullOrEmpty(Properties.Settings.Default.Username))
+                            // Server not reachable - stay on login page with error message
+                            ErrorMessage = "Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.";
+                            return;
+                        }
+
+                        // Server is reachable - check for saved credentials
+                        if (Properties.Settings.Default.RememberMe &&
+                            Properties.Settings.Default.UserId > 0 &&
+                            !string.IsNullOrEmpty(Properties.Settings.Default.Username))
+                        {
+                            // Auto login - go directly to main window
+                            var mainWindow = new Views.MainWindow();
+                            mainWindow.Show();
+                            
+                            // Close login window
+                            foreach (Window window in Application.Current.Windows)
                             {
-                                // go to main window
-                                var mainWindow = new Views.MainWindow();
-                                mainWindow.Show();
-                                // close login window
-                                foreach (System.Windows.Window window in Application.Current.Windows)
+                                if (window is Views.LoginWindow)
                                 {
-                                    if (window is Views.LoginWindow)
-                                    {
-                                        window.Close();
-                                        break;
-                                    }
+                                    window.Close();
+                                    break;
                                 }
                             }
-                            else
-                            {
-                                RememberMe = false;
-                            }
-                        }));
+                        }
+                        // If no saved credentials, user stays on login page for normal login
                     }));
-                }
-                
+                });
             }
-            catch
+            catch (Exception ex)
             {
+                // On any error, stay on login page with error message
+                ErrorMessage = string.Format("Lỗi kết nối: {0}", ex.Message);
                 RememberMe = false;
             }
         }
-        
+
 
         #endregion
 

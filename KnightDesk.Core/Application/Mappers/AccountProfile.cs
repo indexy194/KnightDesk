@@ -8,17 +8,29 @@ namespace KnightDesk.Core.Application.Mappers
     {
         public AccountProfile()
         {
-            CreateMap<Account, AccountDTO>()
-                .ForMember(dest => dest.ServerInfoId, opt => opt.MapFrom(src => src.ServerInfo != null ? src.ServerInfo.Id : 0))
-                .ForMember(dest => dest.ServerInfo, opt => opt.MapFrom(src => src.ServerInfo));
+            //Entity to DTO mappings
+            CreateMap<Account, AccountDTO>();
+            CreateMap<Account, BaseAccountDTO>();
 
+            //DTO to Entity mappings
             CreateMap<CreateAccountDTO, Account>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore()) // Let database generate Id
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.ServerInfoId, opt => opt.MapFrom(src => src.ServerInfoId))
-                .ForMember(dest => dest.ServerInfo, opt => opt.Ignore()); // Navigation property
-                
+                .ForMember(dest => dest.ServerInfo, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Preserve audit fields
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
             CreateMap<UpdateAccountDTO, Account>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) // Preserve existing Id
+                .ForMember(dest => dest.ServerInfoId, opt => opt.MapFrom(src => src.ServerInfoId))
+                .ForMember(dest => dest.ServerInfo, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Preserve audit fields
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
+
+            // Base DTO mappings
+            CreateMap<BaseAccountDTO, Account>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.ServerInfoId, opt => opt.MapFrom(src => src.ServerInfoId))
                 .ForMember(dest => dest.ServerInfo, opt => opt.Ignore()) // Navigation property
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Preserve audit fields

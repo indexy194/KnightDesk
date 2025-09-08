@@ -25,7 +25,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Text="Server Configuration" 
+                    <TextBlock Text="List Servers" 
                                Style="{StaticResource textLabel}" 
                                FontSize="18" 
                                FontWeight="SemiBold" 
@@ -59,31 +59,6 @@
                             </TextBox.Style>
                         </TextBox>
                     </Border>
-                    
-                    <!-- Search Button -->
-                    <Button Grid.Column="2" 
-                            Style="{StaticResource topMenuButton}" 
-                            Width="30"
-                            Height="30"
-                            VerticalAlignment="Center"
-                            Command="{Binding SearchCommand}">
-                        <fa:ImageAwesome Icon="Search" 
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Style="{StaticResource whiteIcon}"
-                                         Width="10"
-                                         Height="10"/>
-                    </Button>
-
-                    <!-- Add New Server Button -->
-                    <Button Grid.Column="3" 
-                            Style="{StaticResource fillButton}" 
-                            Width="100"
-                            Height="30"
-                            Margin="10 0 0 0"
-                            VerticalAlignment="Center"
-                            Content="Add New"
-                            Command="{Binding AddNewServerCommand}"/>
                 </Grid>
 
                 <!-- Header Row -->
@@ -102,6 +77,31 @@
                     <TextBlock Text="Edit" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="3" TextAlignment="Center"/>
                     <TextBlock Text="Delete" Style="{StaticResource textLabel}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" Grid.Column="4" TextAlignment="Center"/>
                 </Grid>
+
+                <!-- Loading Indicator -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLoading}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Loading servers..." 
+                               Style="{StaticResource textLabel}" 
+                               FontSize="14" 
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="●"  
+                               FontSize="16" 
+                               Margin="10 0 0 0"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource textLabel}"/>
+                </StackPanel>
 
                 <!-- Servers List -->
                 <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
@@ -187,15 +187,6 @@
                 <TextBox Text="{Binding CurrentServer.Name, UpdateSourceTrigger=PropertyChanged}" 
                          Height="30" 
                          Padding="10 0"/>
-
-                <!-- Server Description (if needed) -->
-                <TextBlock Text="Description" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
-                <TextBox Text="{Binding CurrentServer.Description, UpdateSourceTrigger=PropertyChanged}" 
-                         Height="60" 
-                         Padding="10 5"
-                         TextWrapping="Wrap"
-                         AcceptsReturn="True"/>
-
                 <!-- Action Buttons -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 30 0 0">
                     <Button Content="{Binding SaveButtonText}" 

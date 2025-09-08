@@ -1,9 +1,8 @@
 using System;
-using System.ComponentModel;
 
 namespace KnightDesk.Presentation.WPF.Models
 {
-    public class User : INotifyPropertyChanged
+    public class User : BaseModel
     {
         private int _id;
         private string _username = string.Empty;
@@ -16,78 +15,43 @@ namespace KnightDesk.Presentation.WPF.Models
         public int Id
         {
             get => _id;
-            set
-            {
-                _id = value;
-                OnPropertyChanged(nameof(Id));
-            }
+            set => SetProperty(ref _id, value, nameof(Id));
         }
 
         public string Username
         {
             get => _username;
-            set
-            {
-                _username = value;
-                OnPropertyChanged(nameof(Username));
-            }
+            set => SetProperty(ref _username, value, nameof(Username));
         }
 
         public string Password
         {
             get => _password;
-            set
-            {
-                _password = value;
-                OnPropertyChanged(nameof(Password));
-            }
+            set => SetProperty(ref _password, value, nameof(Password));
         }
 
         public string IPAddress
         {
             get => _ipAddress;
-            set
-            {
-                _ipAddress = value;
-                OnPropertyChanged(nameof(IPAddress));
-            }
+            set => SetProperty(ref _ipAddress, value, nameof(IPAddress));
         }
 
         public DateTime? CreatedAt
         {
             get => _createdAt;
-            set
-            {
-                _createdAt = value;
-                OnPropertyChanged(nameof(CreatedAt));
-            }
+            set => SetProperty(ref _createdAt, value, nameof(CreatedAt));
         }
 
         public DateTime? UpdatedAt
         {
             get => _updatedAt;
-            set
-            {
-                _updatedAt = value;
-                OnPropertyChanged(nameof(UpdatedAt));
-            }
+            set => SetProperty(ref _updatedAt, value, nameof(UpdatedAt));
         }
 
         public bool IsDeleted
         {
             get => _isDeleted;
-            set
-            {
-                _isDeleted = value;
-                OnPropertyChanged(nameof(IsDeleted));
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            set => SetProperty(ref _isDeleted, value, nameof(IsDeleted));
         }
     }
 }

@@ -130,7 +130,7 @@
                     <Grid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <fa:ImageAwesome Icon="Server" Style="{StaticResource buttonIcon}" />
-                            <TextBlock Text="Server Config" Style="{StaticResource buttonText}" />
+                            <TextBlock Text="Server" Style="{StaticResource buttonText}" />
                         </StackPanel>
                         <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right">
                             <fa:ImageAwesome.Style>

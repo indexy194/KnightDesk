@@ -1,6 +1,4 @@
-﻿using KnightDesk.Presentation.WPF.Models;
-
-namespace KnightDesk.Presentation.WPF.DTOs
+﻿namespace KnightDesk.Presentation.WPF.DTOs
 {
     public class BaseAccountDTO
     {
@@ -16,7 +14,7 @@ namespace KnightDesk.Presentation.WPF.DTOs
     public class AccountDTO : BaseAccountDTO
     {
         public int Id { get; set; }
-        public ServerInfo ServerInfo { get; set; } = new ServerInfo();
+        public BaseServerInfoDTO ServerInfo { get; set; } = new BaseServerInfoDTO();
     }
 
     public class CreateAccountDTO : BaseAccountDTO

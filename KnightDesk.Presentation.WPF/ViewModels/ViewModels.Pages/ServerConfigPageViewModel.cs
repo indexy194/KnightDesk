@@ -1,8 +1,12 @@
+using KnightDesk.Presentation.WPF.DTOs;
 using KnightDesk.Presentation.WPF.Models;
+using KnightDesk.Presentation.WPF.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -10,27 +14,29 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 {
     public class ServerConfigPageViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<ServerInfo> _servers;
+        private readonly IServerInfoServices _serverInfoService;
+        private ObservableCollection<ServerInfo> _servers; // auto refresh UI on changes
         private ObservableCollection<ServerInfo> _filteredServers;
         private ServerInfo _currentServer;
         private string _searchText = string.Empty;
         private bool _isEditMode = false;
+        private bool _isLoading = false;
 
         public ServerConfigPageViewModel()
         {
-            Servers = new ObservableCollection<ServerInfo>();
-            FilteredServers = new ObservableCollection<ServerInfo>();
+            _serverInfoService = new ServerInfoServices();
+            _servers = new ObservableCollection<ServerInfo>();
+            _filteredServers = new ObservableCollection<ServerInfo>();
             CurrentServer = new ServerInfo();
 
             // Initialize commands - .NET 3.5 compatible
-            SearchCommand = new RelayCommand(new Action(ExecuteSearch));
-            AddNewServerCommand = new RelayCommand(new Action(ExecuteAddNew));
-            EditServerCommand = new RelayCommand<ServerInfo>(new Action<ServerInfo>(ExecuteEdit));
-            DeleteServerCommand = new RelayCommand<ServerInfo>(new Action<ServerInfo>(ExecuteDelete));
-            SaveServerCommand = new RelayCommand(new Action(ExecuteSave), new Func<bool>(CanExecuteSave));
-            CancelCommand = new RelayCommand(new Action(ExecuteCancel));
+            AddNewServerCommand = new RelayCommand(ExecuteAddNew);
+            EditServerCommand = new RelayCommand<ServerInfo>(ExecuteEdit);
+            DeleteServerCommand = new RelayCommand<ServerInfo>(ExecuteDelete);
+            SaveServerCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
+            CancelCommand = new RelayCommand(ExecuteCancel);
 
-            LoadData();
+            LoadServers();
         }
 
         #region Properties
@@ -55,6 +61,16 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             }
         }
 
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged("IsLoading");
+            }
+        }
+
         public ServerInfo CurrentServer
         {
             get { return _currentServer; }
@@ -74,25 +90,24 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             {
                 _searchText = value;
                 OnPropertyChanged("SearchText");
-                FilterServers();
+                ExecuteSearch();
             }
         }
 
-        public string FormTitle 
-        { 
-            get { return _isEditMode ? "Edit Server" : "Add New Server"; } 
+        public string FormTitle
+        {
+            get { return _isEditMode ? "Edit" : "Add"; }
         }
 
-        public string SaveButtonText 
-        { 
-            get { return _isEditMode ? "Update" : "Save"; } 
+        public string SaveButtonText
+        {
+            get { return _isEditMode ? "Update" : "Save"; }
         }
 
         #endregion
 
         #region Commands
 
-        public ICommand SearchCommand { get; private set; }
         public ICommand AddNewServerCommand { get; private set; }
         public ICommand EditServerCommand { get; private set; }
         public ICommand DeleteServerCommand { get; private set; }
@@ -105,7 +120,37 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteSearch()
         {
-            FilterServers();
+            if (!string.IsNullOrEmpty(_searchText))
+            {
+                // Use API search for better performance
+                _serverInfoService.SearchServersAsync(_searchText, new Action<GeneralResponseDTO<IEnumerable<ServerInfoDTO>>>(result =>
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
+                        {
+                            _servers.Clear();
+                            _filteredServers.Clear();
+                            foreach (var entry in result.Data)
+                            {
+                                var server = new ServerInfo
+                                {
+                                    Id = entry.Id,
+                                    IndexServer = entry.IndexServer,
+                                    Name = entry.Name,
+                                    AccountCount = entry.Accounts.Count,
+                                };
+                                _servers.Add(server);
+                                _filteredServers.Add(server);
+                            }
+                        }
+                    }));
+                }));
+            }
+            else
+            {
+                LoadServers(); // Reset to full list
+            }
         }
 
         private void ExecuteAddNew()
@@ -124,15 +169,10 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                 CurrentServer = new ServerInfo
                 {
                     Id = server.Id,
+                    IndexServer = server.IndexServer,
                     Name = server.Name,
-                    ServerNo = server.ServerNo,
-                    Description = server.Description,
-                    CreatedAt = server.CreatedAt,
-                    UpdatedAt = server.UpdatedAt,
-                    IsDeleted = server.IsDeleted,
-                    AccountCount = server.AccountCount
                 };
-                
+
                 OnPropertyChanged("FormTitle");
                 OnPropertyChanged("SaveButtonText");
             }
@@ -143,66 +183,134 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             if (server != null)
             {
                 MessageBoxResult result = MessageBox.Show(
-                    string.Format("Are you sure you want to delete the server '{0}'?", server.Name), 
-                    "Confirm Delete", 
-                    MessageBoxButton.YesNo, 
+                    string.Format("Are you sure you want to delete the server '{0}'?", server.Name),
+                    "Confirm Delete",
+                    MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
-                
+
                 if (result == MessageBoxResult.Yes)
                 {
-                    try
+                    IsLoading = true;
+
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
                     {
-                        Servers.Remove(server);
-                        FilterServers();
-                        MessageBox.Show("Server deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(string.Format("Error deleting server: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                        _serverInfoService.DeleteServerAsync(server.Id, new Action<GeneralResponseDTO<string>>(deleteResult =>
+                        {
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                IsLoading = false;
+
+                                if (deleteResult.Code == (int)RESPONSE_CODE.OK)
+                                {
+                                    if (!string.IsNullOrEmpty(_searchText))
+                                    {
+                                        ExecuteSearch();
+                                    }
+                                    else
+                                    {
+                                        LoadServers();
+                                    }
+                                    MessageBox.Show("Server deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(string.Format("Error deleting server: {0}", deleteResult.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                }
+                            }));
+                        }));
+                    }));
                 }
             }
         }
 
         private void ExecuteSave()
         {
-            try
+            if (CurrentServer == null || string.IsNullOrEmpty(CurrentServer.Name) || CurrentServer.IndexServer <= 0)
             {
-                if (_isEditMode)
-                {
-                    ServerInfo existingServer = Servers.FirstOrDefault(delegate(ServerInfo s) { return s.Id == CurrentServer.Id; });
-                    if (existingServer != null)
-                    {
-                        int index = Servers.IndexOf(existingServer);
-                        CurrentServer.UpdatedAt = DateTime.Now;
-                        Servers[index] = CurrentServer;
-                    }
-                    MessageBox.Show("Server updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    CurrentServer.Id = Servers.Count > 0 ? Servers.Max(delegate(ServerInfo s) { return s.Id; }) + 1 : 1;
-                    CurrentServer.CreatedAt = DateTime.Now;
-                    CurrentServer.UpdatedAt = DateTime.Now;
-                    CurrentServer.AccountCount = 0;
-                    Servers.Add(CurrentServer);
-                    MessageBox.Show("Server created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-
-                FilterServers();
-                ExecuteCancel();
+                MessageBox.Show("Please fill all required fields!", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            catch (Exception ex)
+
+            IsLoading = true;
+
+
+            if (_isEditMode)
             {
-                MessageBox.Show(string.Format("Error saving server: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var updateDto = new UpdateServerInfoDTO
+                {
+                    Id = CurrentServer.Id,
+                    IndexServer = CurrentServer.IndexServer,
+                    Name = CurrentServer.Name,
+                };
+                _serverInfoService.UpdateServerAsync(updateDto, new Action<GeneralResponseDTO<ServerInfoDTO>>(result =>
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        IsLoading = false;
+
+                        if (result.Code == (int)RESPONSE_CODE.OK)
+                        {
+                            if (!string.IsNullOrEmpty(_searchText))
+                            {
+                                ExecuteSearch();
+                            }
+                            else
+                            {
+                                LoadServers();
+                            }
+                            ExecuteCancel();
+                            MessageBox.Show("Account updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(string.Format("Error updating server: {0}", result.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }));
+                }));
+            }
+            else
+            {
+                var createDto = new CreateServerInfoDTO
+                {
+                    IndexServer = CurrentServer.IndexServer,
+                    Name = CurrentServer.Name,
+                };
+                CurrentServer.AccountCount = 0;
+
+                _serverInfoService.CreateServerAsync(createDto, new Action<GeneralResponseDTO<ServerInfoDTO>>(result =>
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        IsLoading = false;
+
+                        if (result.Code == (int)RESPONSE_CODE.Created || result.Code == (int)RESPONSE_CODE.OK)
+                        {
+                            if (!string.IsNullOrEmpty(_searchText))
+                            {
+                                ExecuteSearch();
+                            }
+                            else
+                            {
+                                LoadServers();
+                            }
+                            ExecuteCancel();
+                            MessageBox.Show("Account created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(string.Format("Error creating server: {0}", result.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }));
+                }));
             }
         }
 
         private bool CanExecuteSave()
         {
-            return CurrentServer != null && 
-                   !string.IsNullOrEmpty(CurrentServer.Name) && 
-                   CurrentServer.ServerNo > 0;
+            return CurrentServer != null &&
+                   !string.IsNullOrEmpty(CurrentServer.Name) &&
+                   CurrentServer.IndexServer > 0 &&
+                   !IsLoading;
         }
 
         private void ExecuteCancel()
@@ -217,46 +325,38 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #region Private Methods
 
-        private void LoadData()
+        private void LoadServers()
         {
-            try
-            {
-                // Mock server data - replace with actual API call when available
-                Servers.Clear();
-                Servers.Add(new ServerInfo { Id = 1, Name = "Game Server 1", ServerNo = 1, Description = "Main game server for beginners", AccountCount = 5, CreatedAt = DateTime.Now.AddDays(-30) });
-                Servers.Add(new ServerInfo { Id = 2, Name = "Game Server 2", ServerNo = 2, Description = "Advanced game server", AccountCount = 3, CreatedAt = DateTime.Now.AddDays(-20) });
-                Servers.Add(new ServerInfo { Id = 3, Name = "Game Server 3", ServerNo = 3, Description = "PvP focused server", AccountCount = 8, CreatedAt = DateTime.Now.AddDays(-10) });
+            IsLoading = true;
 
-                FilterServers();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("Error loading data: {0}", ex.Message), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
-        private void FilterServers()
-        {
-            FilteredServers.Clear();
-            
-            if (string.IsNullOrEmpty(SearchText))
+            _serverInfoService.GetAllServersAsync(new Action<GeneralResponseDTO<IEnumerable<ServerInfoDTO>>>(result =>
             {
-                foreach (ServerInfo server in Servers)
+                Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    FilteredServers.Add(server);
-                }
-            }
-            else
-            {
-                foreach (ServerInfo server in Servers)
-                {
-                    if (server.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        server.ServerNo.ToString().IndexOf(SearchText) >= 0)
+                    IsLoading = false;
+
+                    if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
                     {
-                        FilteredServers.Add(server);
+                        _servers.Clear();
+                        _filteredServers.Clear();
+                        foreach (var entry in result.Data)
+                        {
+                            var server = new ServerInfo
+                            {
+                                Id = entry.Id,
+                                IndexServer = entry.IndexServer,
+                                Name = entry.Name,
+                                AccountCount = entry.Accounts.Count,
+                            };
+                            _servers.Add(server);
+                            _filteredServers.Add(server);
+                        }
+                        //FilteredServers = _servers;
                     }
-                }
-            }
+                }));
+            }));
+
         }
 
         #endregion

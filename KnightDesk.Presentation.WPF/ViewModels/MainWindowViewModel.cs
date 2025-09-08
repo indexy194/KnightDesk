@@ -1,4 +1,5 @@
 using KnightDesk.Presentation.WPF.Pages;
+using KnightDesk.Presentation.WPF.ViewModels.Pages;
 using System;
 using System.ComponentModel;
 using System.Windows.Controls;
@@ -110,8 +111,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             switch (pageName)
             {
                 case "Manager":
-                    // Keep the existing manager view (original content)
-                    CurrentPage = null; // This will show the original content
+                    CurrentPage = new ManagerPage(); // This will show the original content
                     break;
                 case "Accounts":
                     CurrentPage = new AccountPage();
@@ -127,7 +127,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                     break;
             }
         }
-
         private void ExecuteLogout()
         {
             try

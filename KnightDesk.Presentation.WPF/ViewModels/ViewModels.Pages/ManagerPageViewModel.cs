@@ -1,10 +1,11 @@
 ﻿using KnightDesk.Presentation.WPF.DTOs;
+using KnightDesk.Presentation.WPF.Models;
 using KnightDesk.Presentation.WPF.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,23 +13,22 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 {
     public class ManagerPageViewModel : INotifyPropertyChanged
     {
-        private readonly IAccountApiService _accountService;
-        private List<AccountDTO> _allAccounts;
-        private List<AccountDTO> _filteredAccounts;
-        private AccountDTO _selectedAccount;
+        private readonly IAccountServices _accountService;
+        private ObservableCollection<Account> _allAccounts;
+        private ObservableCollection<Account> _filteredAccounts;
+        private Account _selectedAccount;
         private string _searchText;
         private bool _isLoading;
 
         public ManagerPageViewModel()
         {
-            _accountService = new AccountApiService();
-            _allAccounts = new List<AccountDTO>();
-            _filteredAccounts = new List<AccountDTO>();
+            _accountService = new AccountServices();
+            _allAccounts = new ObservableCollection<Account>();
+            _filteredAccounts = new ObservableCollection<Account>();
 
             // Initialize commands
-            SearchCommand = new RelayCommand(new Action(ExecuteSearch));
-            ToggleFavoriteCommand = new RelayCommand<object>(ExecuteToggleFavorite);
-            SelectAccountCommand = new RelayCommand<object>(ExecuteSelectAccount);
+            SearchCommand = new RelayCommand(ExecuteSearch);
+            SelectAccountCommand = new RelayCommand<Account>(ExecuteSelectAccount);
 
             // Load favorite accounts on initialization
             LoadFavoriteAccounts();
@@ -36,7 +36,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #region Properties
 
-        public List<AccountDTO> FilteredAccounts
+        public ObservableCollection<Account> FilteredAccounts
         {
             get { return _filteredAccounts; }
             set
@@ -46,7 +46,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             }
         }
 
-        public AccountDTO SelectedAccount
+        public Account SelectedAccount
         {
             get { return _selectedAccount; }
             set
@@ -83,7 +83,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
         #region Commands
 
         public ICommand SearchCommand { get; private set; }
-        public ICommand ToggleFavoriteCommand { get; private set; }
         public ICommand SelectAccountCommand { get; private set; }
 
         #endregion
@@ -94,50 +93,24 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
         {
             if (string.IsNullOrEmpty(_searchText))
             {
-                FilteredAccounts = new List<AccountDTO>(_allAccounts);
+                FilteredAccounts = new ObservableCollection<Account>(_allAccounts);
             }
             else
             {
                 var searchLower = _searchText.ToLower();
-                FilteredAccounts = _allAccounts.Where(account =>
-                    (!string.IsNullOrEmpty(account.Username) && account.Username.ToLower().Contains(searchLower)) ||
-                    (!string.IsNullOrEmpty(account.CharacterName) && account.CharacterName.ToLower().Contains(searchLower))
-                ).ToList();
+                FilteredAccounts = new ObservableCollection<Account>(
+                    _allAccounts.Where(account =>
+                        (!string.IsNullOrEmpty(account.Username) && account.Username.ToLower().Contains(searchLower)) ||
+                        (!string.IsNullOrEmpty(account.CharacterName) && account.CharacterName.ToLower().Contains(searchLower))
+                    )
+                );
             }
         }
 
-        private void ExecuteToggleFavorite(object parameter)
-        {
-            if (parameter is AccountDTO account)
-            {
-                IsLoading = true;
-
-                ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
-                {
-                    _accountService.ToggleFavoriteAsync(account.Id, new Action<GeneralResponseDTO<bool>>(result =>
-                    {
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
-                        {
-                            if (result.Code == 200)
-                            {
-                                // Update the account in the list
-                                var accountToUpdate = _allAccounts.FirstOrDefault(a => a.Id == account.Id);
-                                if (accountToUpdate != null)
-                                {
-                                    accountToUpdate.IsFavorite = !accountToUpdate.IsFavorite;
-                                    ExecuteSearch(); // Refresh the filtered list
-                                }
-                            }
-                            IsLoading = false;
-                        }));
-                    }));
-                }));
-            }
-        }
 
         private void ExecuteSelectAccount(object parameter)
         {
-            if (parameter is AccountDTO account)
+            if (parameter is Account account)
             {
                 SelectedAccount = account;
             }
@@ -145,34 +118,60 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #endregion
 
+        #region Public Methods
+
+        /// <summary>
+        /// Refresh the favorite accounts list - can be called from MainWindow
+        /// </summary>
+        public void RefreshFavoriteAccounts()
+        {
+            LoadFavoriteAccounts();
+        }
+        #endregion
+
         #region Private Methods
 
         private void LoadFavoriteAccounts()
         {
             IsLoading = true;
-
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state =>
+            int userId = Properties.Settings.Default.UserId;
+            if (userId <= 0)
             {
-                int userId = Properties.Settings.Default.UserId;
-
-                // Use the correct API endpoint for getting favorite accounts by user ID
-                _accountService.GetFavoriteAccountsByUserIdAsync(userId, new Action<GeneralResponseDTO<IEnumerable<AccountDTO>>>(result =>
+                IsLoading = false;
+                return;
+            }
+            // Use the correct API endpoint for getting favorite accounts by user ID
+            _accountService.GetFavoriteAccountsByUserIdAsync(userId, new Action<GeneralResponseDTO<IEnumerable<AccountDTO>>>(result =>
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
                     {
-                        if (result.Code == 200 && result.Data != null)
+                        foreach(var entry in result.Data)
                         {
-                            _allAccounts = result.Data.ToList();
-                            FilteredAccounts = new List<AccountDTO>(_allAccounts);
-
-                            // Set first account as selected if available
-                            if (_allAccounts.Count > 0)
+                            Account account = new Account
                             {
-                                SelectedAccount = _allAccounts.First();
-                            }
+                                Id = entry.Id,
+                                Username = entry.Username,
+                                CharacterName = entry.CharacterName,
+                                Password = entry.Password,
+                                IndexCharacter = entry.IndexCharacter,
+                                IsFavorite = entry.IsFavorite,
+                                ServerInfoId = entry.ServerInfoId,
+                                IndexServer = entry.ServerInfo.IndexServer,
+                                ServerName = entry.ServerInfo.Name,
+                            };
+                            _allAccounts.Add(account);
                         }
-                        IsLoading = false;
-                    }));
+                        FilteredAccounts = _allAccounts;
+
+                        // Set first account as selected if available
+                        if (_allAccounts.Count > 0)
+                        {
+                            SelectedAccount = _allAccounts.First();
+                        }
+                    }
+                    IsLoading = false;
                 }));
             }));
         }

@@ -9,8 +9,8 @@ namespace KnightDesk.Core.Application.Mappers
         public UserProfile()
         {
             // Entity to DTO mappings
-            CreateMap<User, UserDTO>()
-                .ForMember(dest => dest.Accounts, opt => opt.MapFrom(src => src.Accounts));
+            CreateMap<User, UserDTO>();
+            CreateMap<User, BaseUserDTO>();
 
             // DTO to Entity mappings
             CreateMap<CreateUserDTO, User>()

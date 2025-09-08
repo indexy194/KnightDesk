@@ -24,7 +24,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Account Management" Style="{StaticResource textLabel}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="List Accounts" Style="{StaticResource textLabel}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <!-- Search TextBox -->
                     <Border Grid.Column="1" 
@@ -124,29 +124,14 @@
                                             HorizontalAlignment="Center" 
                                             VerticalAlignment="Center"/>
 
-                                    <Button Grid.Column="4" 
-                                            Style="{StaticResource button}" 
-                                            Width="30" 
-                                            Height="30" 
-                                            HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"
-                                            Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
-                                            CommandParameter="{Binding}">
-                                        <fa:ImageAwesome Width="8" Height="8">
-                                            <fa:ImageAwesome.Style>
-                                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource whiteIcon}">
-                                                    <Setter Property="Icon" Value="StarOutline"/>
-                                                    <Setter Property="Foreground" Value="#888888"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
-                                                            <Setter Property="Icon" Value="Star"/>
-                                                            <Setter Property="Foreground" Value="#FFD700"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </fa:ImageAwesome.Style>
-                                        </fa:ImageAwesome>
-                                    </Button>
+                                    <!-- Favorite Star Display Only -->
+                                    <fa:ImageAwesome Grid.Column="4" 
+                                                     Width="12" 
+                                                     Height="12" 
+                                                     HorizontalAlignment="Center" 
+                                                     VerticalAlignment="Center"
+                                                     Icon="Star"
+                                                     Foreground="#FFD700"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -202,7 +187,7 @@
                             Grid.Row="2"
                             Width="100"
                             VerticalAlignment="Bottom" 
-                            Content="Login"/>
+                            Content="Start"/>
                     <Button Style="{StaticResource exitButton}"
                             Grid.Column="2"
                             Grid.Row="2"

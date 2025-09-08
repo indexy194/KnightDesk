@@ -57,11 +57,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="DTOs\AccountDTO.cs" />
     <Compile Include="DTOs\GeneralResponseDTO.cs" />
+    <Compile Include="DTOs\ServerConnectionDTO.cs" />
+    <Compile Include="DTOs\ServerInfoDTO.cs" />
     <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Pages\AccountPage.xaml.cs">
@@ -73,13 +75,10 @@
     <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Services\AccountApiService.cs" />
-    <Compile Include="Services\IAccountApiService.cs" />
-    <Compile Include="Services\ILoginService.cs" />
-    <Compile Include="Services\IServerInfoService.cs" />
-    <Compile Include="Services\LoginService.cs" />
-    <Compile Include="Services\ServerConnectionService.cs" />
-    <Compile Include="Services\ServerInfoService.cs" />
+    <Compile Include="Services\AccountServices.cs" />
+    <Compile Include="Services\LoginServices.cs" />
+    <Compile Include="Services\ServerConnectionServices.cs" />
+    <Compile Include="Services\ServerInfoServices.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\AccountPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

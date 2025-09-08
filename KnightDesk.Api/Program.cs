@@ -38,6 +38,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Core Services
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IServerInfoService, ServerInfoService>();
 
 // Infrastructure Services
 builder.Services.AddScoped<DataSeedingService>();

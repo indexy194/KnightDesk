@@ -19,13 +19,13 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
     public class AccountPageViewModel : INotifyPropertyChanged
     {
-        private readonly IAccountApiService _accountService;
-        private readonly IServerInfoService _serverInfoService;
-        
-        private ObservableCollection<AccountDTO> _accounts;
-        private ObservableCollection<AccountDTO> _filteredAccounts;
+        private readonly IAccountServices _accountService;
+        private readonly IServerInfoServices _serverInfoService;
+
+        private ObservableCollection<Account> _accounts;
+        private ObservableCollection<Account> _filteredAccounts;
         private ObservableCollection<ServerInfo> _servers;
-        private AccountDTO _currentAccount;
+        private Account _currentAccount;
         private ServerInfo _selectedServer;
         private string _searchText;
         private string _formTitle;
@@ -37,31 +37,32 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         public AccountPageViewModel()
         {
-            _accountService = new AccountApiService();
-            _serverInfoService = new ServerInfoService();
-            
+            _accountService = new AccountServices();
+            _serverInfoService = new ServerInfoServices();
+
             // Initialize collections
-            _accounts = new ObservableCollection<AccountDTO>();
-            _filteredAccounts = new ObservableCollection<AccountDTO>();
+            _accounts = new ObservableCollection<Account>();
+            _filteredAccounts = new ObservableCollection<Account>();
             _servers = new ObservableCollection<ServerInfo>();
+
             _characterIndexOptions = new ObservableCollection<CharacterIndexOption>
             {
                 new CharacterIndexOption { Value = 1, DisplayText = "Nhân vật 1" },
                 new CharacterIndexOption { Value = 2, DisplayText = "Nhân vật 2" },
                 new CharacterIndexOption { Value = 3, DisplayText = "Nhân vật 3" }
-            }; 
-            
+            };
+
             // Initialize commands
             AddNewAccountCommand = new RelayCommand(ExecuteAddNewAccount);
-            EditAccountCommand = new RelayCommand<object>(ExecuteEditAccount);
-            DeleteAccountCommand = new RelayCommand<object>(ExecuteDeleteAccount);
-            ToggleFavoriteCommand = new RelayCommand<object>(ExecuteToggleFavorite);
+            EditAccountCommand = new RelayCommand<Account>(ExecuteEditAccount);
+            DeleteAccountCommand = new RelayCommand<Account>(ExecuteDeleteAccount);
+            ToggleFavoriteCommand = new RelayCommand<Account>(ExecuteToggleFavorite);
             SaveAccountCommand = new RelayCommand(ExecuteSaveAccount, CanExecuteSaveAccount);
             CancelCommand = new RelayCommand(ExecuteCancel);
 
             // Initialize form
             ResetForm();
-            
+
             // Load initial data
             LoadAccounts();
             LoadServers();
@@ -69,7 +70,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #region Properties
 
-        public ObservableCollection<AccountDTO> Accounts
+        public ObservableCollection<Account> Accounts
         {
             get { return _accounts; }
             set
@@ -79,7 +80,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             }
         }
 
-        public ObservableCollection<AccountDTO> FilteredAccounts
+        public ObservableCollection<Account> FilteredAccounts
         {
             get { return _filteredAccounts; }
             set
@@ -99,7 +100,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             }
         }
 
-        public AccountDTO CurrentAccount
+        public Account CurrentAccount
         {
             get { return _currentAccount; }
             set
@@ -127,7 +128,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             {
                 _searchText = value;
                 OnPropertyChanged("SearchText");
-                FilterAccounts();
+                ExecuteSearch();
             }
         }
 
@@ -164,10 +165,10 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         public bool CanSave
         {
-            get 
-            { 
-                return _currentAccount != null && 
-                       !string.IsNullOrEmpty(_currentAccount.Username) && 
+            get
+            {
+                return _currentAccount != null &&
+                       !string.IsNullOrEmpty(_currentAccount.Username) &&
                        !string.IsNullOrEmpty(_currentPassword) &&
                        _selectedServer != null &&
                        _selectedCharacterIndex != null;
@@ -230,31 +231,44 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #region Command Implementations
 
-        //private void ExecuteSearch()
-        //{
-        //    if (!string.IsNullOrEmpty(_searchText))
-        //    {
-        //        _accountService.SearchAccountsAsync(_searchText, new Action<GeneralResponseDTO<IEnumerable<AccountDTO>>>(result =>
-        //        {
-        //            Application.Current.Dispatcher.Invoke(new Action(() =>
-        //            {
-        //                if (result.Code == 200 && result.Data != null)
-        //                {
-        //                    _accounts.Clear();
-        //                    foreach (var account in result.Data)
-        //                    {
-        //                        _accounts.Add(account);
-        //                    }
-        //                    FilterAccounts();
-        //                }
-        //            }));
-        //        }));
-        //    }
-        //    else
-        //    {
-        //        LoadAccounts();
-        //    }
-        //}
+        private void ExecuteSearch()
+        {
+            if (!string.IsNullOrEmpty(_searchText))
+            {
+                _accountService.SearchAccountsAsync(_searchText, new Action<GeneralResponseDTO<IEnumerable<AccountDTO>>>(result =>
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
+                        {
+                            _accounts.Clear();
+                            _filteredAccounts.Clear();
+                            foreach (var entry in result.Data)
+                            {
+                                Account account = new Account
+                                {
+                                    Id = entry.Id,
+                                    Username = entry.Username,
+                                    CharacterName = entry.CharacterName,
+                                    Password = entry.Password,
+                                    IndexCharacter = entry.IndexCharacter,
+                                    IsFavorite = entry.IsFavorite,
+                                    ServerInfoId = entry.ServerInfoId,
+                                    IndexServer = entry.ServerInfo.IndexServer,
+                                    ServerName = entry.ServerInfo.Name,
+                                };
+                                _accounts.Add(account);
+                                _filteredAccounts.Add(account);
+                            }
+                        }
+                    }));
+                }));
+            }
+            else
+            {
+                LoadAccounts();
+            }
+        }
 
         private void ExecuteAddNewAccount()
         {
@@ -266,20 +280,20 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteEditAccount(object parameter)
         {
-            if (parameter is AccountDTO account)
+            if (parameter is Account account)
             {
                 IsEditMode = true;
-                CurrentAccount = new AccountDTO
+                CurrentAccount = new Account
                 {
                     Id = account.Id,
                     Username = account.Username,
                     CharacterName = account.CharacterName,
                     IndexCharacter = account.IndexCharacter,
-                    ServerInfoId = account.ServerInfo.Id,
+                    ServerInfoId = account.ServerInfoId,
                     IsFavorite = account.IsFavorite
                 };
                 CurrentPassword = account.Password;
-                SelectedServer = _servers.FirstOrDefault(s => s.Id == account.ServerInfo.Id);
+                SelectedServer = _servers.FirstOrDefault(s => s.Id == account.ServerInfoId);
                 SelectedCharacterIndex = _characterIndexOptions.FirstOrDefault(c => c.Value == account.IndexCharacter);
                 FormTitle = "Edit Account";
                 SaveButtonText = "Update";
@@ -288,7 +302,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteDeleteAccount(object parameter)
         {
-            if (parameter is AccountDTO account)
+            if (parameter is Account account)
             {
                 var result = MessageBox.Show(
                     string.Format("Are you sure you want to delete account '{0}'?", account.Username),
@@ -302,9 +316,17 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
-                            if (deleteResult.Code == 200 && deleteResult.Data)
+                            if (deleteResult.Code == (int)RESPONSE_CODE.OK && deleteResult.Data)
                             {
-                                LoadAccounts();
+                                // Refresh the account list after delete
+                                if (!string.IsNullOrEmpty(_searchText))
+                                {
+                                    ExecuteSearch();
+                                }
+                                else
+                                {
+                                    LoadAccounts();
+                                }
                                 MessageBox.Show("Account deleted successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                             else
@@ -319,29 +341,23 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteToggleFavorite(object parameter)
         {
-            if (parameter is AccountDTO account)
+            if (parameter is Account account)
             {
                 _accountService.ToggleFavoriteAsync(account.Id, new Action<GeneralResponseDTO<bool>>(result =>
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        if (result.Code == 200 && result.Data)
+                        if (result.Code == (int)RESPONSE_CODE.OK && result.Data)
                         {
-                            // Update the account in the local collections
-                            var accountInList = _accounts.FirstOrDefault(a => a.Id == account.Id);
-                            if (accountInList != null)
+                            // Refresh the account list after toggle favorite
+                            if (!string.IsNullOrEmpty(_searchText))
                             {
-                                accountInList.IsFavorite = !accountInList.IsFavorite;
+                                ExecuteSearch();
                             }
-                            
-                            var accountInFiltered = _filteredAccounts.FirstOrDefault(a => a.Id == account.Id);
-                            if (accountInFiltered != null)
+                            else
                             {
-                                accountInFiltered.IsFavorite = !accountInFiltered.IsFavorite;
+                                LoadAccounts();
                             }
-                            
-                            // Also update the parameter account
-                            account.IsFavorite = !account.IsFavorite;
                         }
                         else
                         {
@@ -375,9 +391,17 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        if (result.Code == 200 && result.Data != null)
+                        if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
                         {
-                            LoadAccounts();
+                            // Refresh the account list after update
+                            if (!string.IsNullOrEmpty(_searchText))
+                            {
+                                ExecuteSearch();
+                            }
+                            else
+                            {
+                                LoadAccounts();
+                            }
                             ResetForm();
                             MessageBox.Show("Account updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
@@ -404,9 +428,17 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        if (result.Code == 200 && result.Data != null)
+                        if (result.Code == (int)RESPONSE_CODE.Created && result.Data != null)
                         {
-                            LoadAccounts();
+                            // Refresh the account list after add
+                            if (!string.IsNullOrEmpty(_searchText))
+                            {
+                                ExecuteSearch();
+                            }
+                            else
+                            {
+                                LoadAccounts();
+                            }
                             ResetForm();
                             MessageBox.Show("Account added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
@@ -432,12 +464,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
         #endregion
 
         #region Private Methods
-
-        private AccountDTO FindAccountById(int accountId)
-        {
-            return _accounts.FirstOrDefault(a => a.Id == accountId);
-        }
-
         private void LoadAccounts()
         {
             var userId = Properties.Settings.Default.UserId;
@@ -447,14 +473,27 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        if (result.Code == 200 && result.Data != null)
+                        if (result.Code == (int)RESPONSE_CODE.OK && result.Data != null)
                         {
                             _accounts.Clear();
-                            foreach (var account in result.Data)
+                            _filteredAccounts.Clear();
+                            foreach (var entry in result.Data)
                             {
+                                Account account = new Account
+                                {
+                                    Id = entry.Id,
+                                    Username = entry.Username,
+                                    CharacterName = entry.CharacterName,
+                                    Password = entry.Password,
+                                    IndexCharacter = entry.IndexCharacter,
+                                    IsFavorite = entry.IsFavorite,
+                                    ServerInfoId = entry.ServerInfoId,
+                                    IndexServer = entry.ServerInfo.IndexServer,
+                                    ServerName = entry.ServerInfo.Name,
+                                };
                                 _accounts.Add(account);
+                                _filteredAccounts.Add(account);
                             }
-                            FilterAccounts();
                         }
                     }));
                 }));
@@ -463,52 +502,38 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void LoadServers()
         {
-            _serverInfoService.GetAllServersAsync(new Action<List<ServerInfo>>(servers =>
+            _serverInfoService.GetAllServersAsync(new Action<GeneralResponseDTO<IEnumerable<ServerInfoDTO>>>(servers =>
             {
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
                     _servers.Clear();
-                    foreach (var server in servers)
+                    if (servers.Code == (int)RESPONSE_CODE.OK && servers.Data != null)
                     {
-                        _servers.Add(server);
+                        foreach (var entry in servers.Data)
+                        {
+                            ServerInfo serverInfo = new ServerInfo
+                            {
+                                Id = entry.Id,
+                                IndexServer = entry.IndexServer,
+                                Name = entry.Name,
+                            };
+                            _servers.Add(serverInfo);
+                        }
+
                     }
                 }));
             }));
         }
 
-        private void FilterAccounts()
-        {
-            _filteredAccounts.Clear();
-            
-            if (string.IsNullOrEmpty(_searchText))
-            {
-                foreach (var account in _accounts)
-                {
-                    _filteredAccounts.Add(account);
-                }
-            }
-            else
-            {
-                var searchLower = _searchText.ToLower();
-                foreach (var account in _accounts)
-                {
-                    if (account.Username.ToLower().Contains(searchLower) ||
-                        account.CharacterName.ToLower().Contains(searchLower))
-                    {
-                        _filteredAccounts.Add(account);
-                    }
-                }
-            }
-        }
 
         private void ResetForm()
         {
-            CurrentAccount = new AccountDTO();
+            CurrentAccount = new Account();
             SelectedServer = null;
             SelectedCharacterIndex = null;
             CurrentPassword = string.Empty;
             IsEditMode = false;
-            FormTitle = "Add New Account";
+            FormTitle = "Add New";
             SaveButtonText = "Add";
         }
 

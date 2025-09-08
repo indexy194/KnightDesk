@@ -11,11 +11,11 @@ namespace KnightDesk.Core.Application.DTOs
         [JsonProperty("code")]
         public int Code { get; set; } = (int)RESPONSE_CODE.OK;
         [JsonProperty("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
         [JsonProperty("errors")]
         public IList<ResponseError> Errors { get; set; }
         [JsonProperty("data")]
-        public T Data { get; set; }
+        public T Data { get; set; } = default!;
         [JsonProperty("meta")]
         public ResponseMeta Meta { get; set; }
         public void AddSingleError(string errorMsg, int code)

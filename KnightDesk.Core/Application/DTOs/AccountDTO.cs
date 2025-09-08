@@ -14,7 +14,7 @@
     public class AccountDTO : BaseAccountDTO
     {
         public int Id { get; set; }
-        public ServerInfoDTO? ServerInfo { get; set; }
+        public BaseServerInfoDTO? ServerInfo { get; set; } = null;
     }
     public class CreateAccountDTO : BaseAccountDTO
     {

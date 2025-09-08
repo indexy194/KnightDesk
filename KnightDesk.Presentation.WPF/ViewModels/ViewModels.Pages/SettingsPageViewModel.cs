@@ -10,7 +10,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 {
     public class SettingsPageViewModel : INotifyPropertyChanged
     {
-        private bool _rememberLogin;
         private string _gamePath = string.Empty;
         private string _dataPath = string.Empty;
         private string _configPath = string.Empty;
@@ -32,15 +31,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         #region Properties
 
-        public bool RememberLogin
-        {
-            get { return _rememberLogin; }
-            set
-            {
-                _rememberLogin = value;
-                OnPropertyChanged("RememberLogin");
-            }
-        }
+
 
         public string GamePath
         {
@@ -157,7 +148,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             try
             {
                 SaveSettingsToRegistry();
-                ValidateAndCreateDirectories();
+                //ValidateAndCreateDirectories();
                 
                 System.Windows.MessageBox.Show("Settings saved successfully!", "Success", 
                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -191,17 +182,16 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             try
             {
                 // Load from registry or config file
-                RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
+                //RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
                 
-                RememberLogin = Convert.ToBoolean(key.GetValue("RememberLogin", false));
-                GamePath = key.GetValue("GamePath", GetDefaultGamePath()).ToString();
-                DataPath = key.GetValue("DataPath", GetDefaultDataPath()).ToString();
-                ConfigPath = key.GetValue("ConfigPath", GetDefaultConfigPath()).ToString();
-                StartWithWindows = Convert.ToBoolean(key.GetValue("StartWithWindows", false));
-                MinimizeToTray = Convert.ToBoolean(key.GetValue("MinimizeToTray", true));
-                AutoUpdate = Convert.ToBoolean(key.GetValue("AutoUpdate", true));
+                GamePath = Properties.Settings.Default.GamePath;
+                //DataPath = key.GetValue("DataPath", GetDefaultDataPath()).ToString();
+                //ConfigPath = key.GetValue("ConfigPath", GetDefaultConfigPath()).ToString();
+                //StartWithWindows = Convert.ToBoolean(key.GetValue("StartWithWindows", false));
+                //MinimizeToTray = Convert.ToBoolean(key.GetValue("MinimizeToTray", true));
+                //AutoUpdate = Convert.ToBoolean(key.GetValue("AutoUpdate", true));
 
-                key.Close();
+                //key.Close();
             }
             catch (Exception ex)
             {
@@ -213,20 +203,22 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void SaveSettingsToRegistry()
         {
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
+            //RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
             
-            key.SetValue("RememberLogin", RememberLogin);
-            key.SetValue("GamePath", GamePath);
-            key.SetValue("DataPath", DataPath);
-            key.SetValue("ConfigPath", ConfigPath);
-            key.SetValue("StartWithWindows", StartWithWindows);
-            key.SetValue("MinimizeToTray", MinimizeToTray);
-            key.SetValue("AutoUpdate", AutoUpdate);
+            //key.SetValue("GamePath", GamePath);
+            //key.SetValue("DataPath", DataPath);
+            //key.SetValue("ConfigPath", ConfigPath);
+            //key.SetValue("StartWithWindows", StartWithWindows);
+            //key.SetValue("MinimizeToTray", MinimizeToTray);
+            //key.SetValue("AutoUpdate", AutoUpdate);
 
-            key.Close();
+            //key.Close();
 
-            // Handle Windows startup
-            HandleWindowsStartup();
+            //// Handle Windows startup
+            //HandleWindowsStartup();
+
+            //my code
+            Properties.Settings.Default.GamePath = GamePath;
         }
 
         private void HandleWindowsStartup()
@@ -261,11 +253,11 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             }
         }
 
-        private void ValidateAndCreateDirectories()
-        {
-            CreateDirectoryIfNotExists(DataPath, "Data Storage");
-            CreateDirectoryIfNotExists(ConfigPath, "Configuration");
-        }
+        //private void ValidateAndCreateDirectories()
+        //{
+        //    CreateDirectoryIfNotExists(DataPath, "Data Storage");
+        //    CreateDirectoryIfNotExists(ConfigPath, "Configuration");
+        //}
 
         private void CreateDirectoryIfNotExists(string path, string description)
         {
@@ -285,13 +277,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ResetToDefaults()
         {
-            RememberLogin = false;
-            GamePath = GetDefaultGamePath();
-            DataPath = GetDefaultDataPath();
-            ConfigPath = GetDefaultConfigPath();
-            StartWithWindows = false;
-            MinimizeToTray = true;
-            AutoUpdate = true;
+            GamePath = string.Empty;
         }
 
         private string GetDefaultGamePath()

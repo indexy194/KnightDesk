@@ -9,7 +9,6 @@ namespace KnightDesk.Core.Application.DTOs
     public class UserDTO : BaseUserDTO
     {
         public int Id { get; set; }
-        public IList<AccountDTO>? Accounts { get; set; } = null;
     }
 
     public class CreateUserDTO : BaseUserDTO

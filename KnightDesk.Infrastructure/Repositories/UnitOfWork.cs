@@ -43,12 +43,6 @@ namespace KnightDesk.Infrastructure.Repositories
                 return _userRepository ??= new UserRepository(_context);
             }
         }
-
-        // For backward compatibility with existing code
-        public IAccountRepository AccountRepository => Accounts;
-        public IServerInfoRepository ServerInfoRepository => ServerInfos;
-        public IUserRepository UserRepository => Users;
-
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();

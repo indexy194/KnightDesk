@@ -16,8 +16,8 @@ namespace KnightDesk.Infrastructure.Repositories
             if (string.IsNullOrWhiteSpace(username))
                 return null;
 
-            return await _context.Users
-                .Include(u => u.Accounts)
+            return await _context.Users!
+                .Include(u => u.Accounts!)
                 .ThenInclude(a => a.ServerInfo)
                 .FirstOrDefaultAsync(u => u.Username == username && !u.IsDeleted);
         }
@@ -27,8 +27,8 @@ namespace KnightDesk.Infrastructure.Repositories
             if (string.IsNullOrWhiteSpace(ipAddress))
                 return null;
 
-            return await _context.Users
-                .Include(u => u.Accounts)
+            return await _context.Users!
+                .Include(u => u.Accounts!)
                 .ThenInclude(a => a.ServerInfo)
                 .FirstOrDefaultAsync(u => u.IPAddress == ipAddress && !u.IsDeleted);
         }
@@ -58,8 +58,8 @@ namespace KnightDesk.Infrastructure.Repositories
 
             // Note: In production, you should hash the password before comparing
             // This is a simplified version for demonstration
-            return await _context.Users
-                .Include(u => u.Accounts)
+            return await _context.Users!
+                .Include(u => u.Accounts!)
                 .ThenInclude(a => a.ServerInfo)
                 .FirstOrDefaultAsync(u => u.Username == username && 
                                         u.Password == password && 
@@ -68,8 +68,8 @@ namespace KnightDesk.Infrastructure.Repositories
 
         public override async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _context.Users
-                .Include(u => u.Accounts)
+            return await _context.Users!
+                .Include(u => u.Accounts!)
                 .ThenInclude(a => a.ServerInfo)
                 .Where(u => !u.IsDeleted)
                 .OrderBy(u => u.Username)
@@ -78,8 +78,8 @@ namespace KnightDesk.Infrastructure.Repositories
 
         public override async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users
-                .Include(u => u.Accounts)
+            return await _context.Users!
+                .Include(u => u.Accounts!)
                 .ThenInclude(a => a.ServerInfo)
                 .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
         }
