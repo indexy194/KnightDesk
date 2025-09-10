@@ -63,7 +63,9 @@
     <Compile Include="DTOs\ServerInfoDTO.cs" />
     <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AutoSettings.cs" />
     <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\GameConfig.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Pages\AccountPage.xaml.cs">
@@ -76,6 +78,7 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountServices.cs" />
+    <Compile Include="Services\GameProcessService.cs" />
     <Compile Include="Services\LoginServices.cs" />
     <Compile Include="Services\ServerConnectionServices.cs" />
     <Compile Include="Services\ServerInfoServices.cs" />

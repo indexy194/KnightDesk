@@ -20,6 +20,7 @@ namespace KnightDesk.Presentation.WPF.Services
         void ToggleFavoriteAsync(int id, Action<GeneralResponseDTO<bool>> callback);
         void GetFavoriteAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
         void GetFavoriteAccountsByUserIdAsync(int userId, Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback);
+        void UpdateCharacterNameByUserId(UpdateCharacterDTO entry, Action<GeneralResponseDTO<bool>> callback);
     }
     public class AccountServices : IAccountServices
     {
@@ -451,6 +452,51 @@ namespace KnightDesk.Presentation.WPF.Services
             worker.RunWorkerCompleted += (sender, e) =>
             {
                 callback((GeneralResponseDTO<IEnumerable<AccountDTO>>)e.Result);
+                worker.Dispose();
+            };
+            worker.RunWorkerAsync();
+        }
+
+        public void UpdateCharacterNameByUserId(UpdateCharacterDTO entry, Action<GeneralResponseDTO<bool>> callback)
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
+            {
+                try
+                {
+                    var serializer = new JavaScriptSerializer();
+                    var json = serializer.Serialize(entry);
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/update-character", _baseUrl));
+                    request.Method = "PUT";
+                    request.ContentType = "application/json";
+                    request.Accept = "application/json";
+                    using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                    {
+                        streamWriter.Write(json);
+                    }
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    {
+                        using (var streamReader = new StreamReader(response.GetResponseStream()))
+                        {
+                            var responseContent = streamReader.ReadToEnd();
+                            var result = serializer.Deserialize<GeneralResponseDTO<bool>>(responseContent);
+                            e.Result = result;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    e.Result = new GeneralResponseDTO<bool>
+                    {
+                        Code = 500,
+                        Message = "Error: " + ex.Message,
+                        Data = false
+                    };
+                }
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                callback((GeneralResponseDTO<bool>)e.Result);
                 worker.Dispose();
             };
             worker.RunWorkerAsync();

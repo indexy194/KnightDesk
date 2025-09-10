@@ -21,6 +21,7 @@ namespace KnightDesk.Core.Application.Services
         Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetListAccountsByUserId(int userId);
         //get account favorite by user id
         Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetFavoriteAccountsByUserId(int userId);
+        Task<GeneralResponseDTO<bool>> UpdateCharacterNameById(UpdateCharacterDTO entry);
     }
     public class AccountService : IAccountService
     {
@@ -520,6 +521,58 @@ namespace KnightDesk.Core.Application.Services
                 {
                     Code = (int)RESPONSE_CODE.InternalServerError,
                     Message = "An error occurred while retrieving favorite user accounts"
+                };
+            }
+        }
+
+        public async Task<GeneralResponseDTO<bool>> UpdateCharacterNameById(UpdateCharacterDTO entry)
+        {
+            try
+            {
+                // Validate account
+                if(entry.Id <= 0 || string.IsNullOrWhiteSpace(entry.CharacterName))
+                {
+                    return new GeneralResponseDTO<bool>
+                    {
+                        Code = (int)RESPONSE_CODE.BadRequest,
+                        Message = "Invalid account data",
+                        Data = false
+                    };
+                }
+              
+                //check if user exists
+                var result =  await _unitOfWork.Accounts.GetByIdAsync(entry.Id);
+                if (result == null)
+                {
+                    return new GeneralResponseDTO<bool>
+                    {
+                        Code = (int)RESPONSE_CODE.NotFound,
+                        Message = $"Account with ID {entry.Id} not found"
+                    };
+                }
+                result.CharacterName = entry.CharacterName;
+
+
+                await _unitOfWork.Accounts.UpdateAsync(result);
+                await _unitOfWork.SaveChangesAsync();
+
+                // Get the updated account with ServerInfo included
+
+                _logger.LogInformation("Account updated successfully: {AccountId}", result.Id);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = (int)RESPONSE_CODE.OK,
+                    Message = "Account updated successfully",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating account {AccountId}", entry.Id);
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = (int)RESPONSE_CODE.InternalServerError,
+                    Message = "An error occurred while updating the account"
                 };
             }
         }

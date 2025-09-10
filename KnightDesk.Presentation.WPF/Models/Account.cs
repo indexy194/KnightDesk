@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace KnightDesk.Presentation.WPF.Models
 {
@@ -17,6 +18,13 @@ namespace KnightDesk.Presentation.WPF.Models
         private DateTime? _createdAt;
         private DateTime? _updatedAt;
         private bool _isDeleted;
+        
+        // Game process related properties
+        private bool _isGameRunning;
+        private Process _gameProcess;
+        private string _gameStatus = "Offline";
+        private AutoSettings _autoSettings;
+        private bool _isConnectedToGame;
 
         public int Id
         {
@@ -93,5 +101,58 @@ namespace KnightDesk.Presentation.WPF.Models
             get => _isDeleted;
             set => SetProperty(ref _isDeleted, value, nameof(IsDeleted));
         }
+
+        // Game process related properties
+        public bool IsGameRunning
+        {
+            get => _isGameRunning;
+            set
+            {
+                if (SetProperty(ref _isGameRunning, value, nameof(IsGameRunning)))
+                {
+                    OnPropertyChanged(nameof(StartStopButtonText));
+                    OnPropertyChanged(nameof(CanUseGameControls));
+                }
+            }
+        }
+
+        public Process GameProcess
+        {
+            get => _gameProcess;
+            set => SetProperty(ref _gameProcess, value, nameof(GameProcess));
+        }
+
+        public string GameStatus
+        {
+            get => _gameStatus;
+            set => SetProperty(ref _gameStatus, value, nameof(GameStatus));
+        }
+
+        public AutoSettings AutoSettings
+        {
+            get
+            {
+                if (_autoSettings == null)
+                    _autoSettings = new AutoSettings();
+                return _autoSettings;
+            }
+                set => SetProperty(ref _autoSettings, value, nameof(AutoSettings));
+        }
+
+        public bool IsConnectedToGame
+        {
+            get => _isConnectedToGame;
+            set
+            {
+                if (SetProperty(ref _isConnectedToGame, value, nameof(IsConnectedToGame)))
+                {
+                    OnPropertyChanged(nameof(CanUseGameControls));
+                }
+            }
+        }
+
+        // Computed properties
+        public string StartStopButtonText => IsGameRunning ? "Stop" : "Start";
+        public bool CanUseGameControls => IsGameRunning && IsConnectedToGame;
     }
 }

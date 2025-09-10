@@ -143,6 +143,30 @@ namespace KnightDesk.Api.Controllers
                 };
             }
         }
+        //update character name
+        [HttpPut("update-character")]
+        public async Task<GeneralResponseDTO<bool>> UpdateCharacterName([FromBody] UpdateCharacterDTO characterDto)
+        {
+            try
+            {
+                var account = await _accountService.UpdateCharacterNameById(characterDto);
+                HttpContext.Response.StatusCode = account.Code;
+                return account!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating character name");
+                return new GeneralResponseDTO<bool>
+                {
+                    Code = 500,
+                    Message = "Internal server error",
+                    Errors = new List<ResponseError>
+                    {
+                        new ResponseError { Code = 500, Message = "An error occurred while processing your request." }
+                    }
+                };
+            }
+        }
         //delete account
         [HttpDelete("{id}")]
         public async Task<GeneralResponseDTO<bool>> DeleteAccount(int id)

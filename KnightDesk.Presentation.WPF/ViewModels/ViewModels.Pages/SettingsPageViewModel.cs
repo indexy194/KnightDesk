@@ -109,13 +109,14 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteBrowseGamePath()
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.Description = "Select Game Installation Directory";
-            dialog.SelectedPath = GamePath;
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Title = "Select Game Executable File";
+            dialog.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*";
+            dialog.InitialDirectory = !string.IsNullOrEmpty(GamePath) ? Path.GetDirectoryName(GamePath) : string.Empty;
 
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (dialog.ShowDialog() == true)
             {
-                GamePath = dialog.SelectedPath;
+                GamePath = dialog.FileName;
             }
         }
 
@@ -219,6 +220,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
             //my code
             Properties.Settings.Default.GamePath = GamePath;
+            Properties.Settings.Default.Save();
         }
 
         private void HandleWindowsStartup()

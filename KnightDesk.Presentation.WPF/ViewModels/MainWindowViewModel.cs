@@ -11,6 +11,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
     {
         private UserControl _currentPage;
         private UserControl _managerPage;
+        private string _username;
+        private string _userGreeting;
         private string _activeMenu = "Manager";
 
         public MainWindowViewModel()
@@ -18,6 +20,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             // Initialize pages
             _managerPage = new ManagerPage();
 
+            // Load username and set greeting
+            LoadUserInfo();
 
             // Initialize commands - .NET 3.5 compatible
             NavigateToManagerCommand = new RelayCommand(new Action(() => NavigateToPage("Manager")));
@@ -90,6 +94,26 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 return _currentPage ?? _managerPage;
             }
         }
+        public string Username
+        {
+            get { return _username; }
+            set
+            {
+                _username = value;
+                OnPropertyChanged("Username");
+                UpdateUserGreeting();
+            }
+        }
+
+        public string UserGreeting
+        {
+            get { return _userGreeting; }
+            set
+            {
+                _userGreeting = value;
+                OnPropertyChanged("UserGreeting");
+            }
+        }
 
         #endregion
 
@@ -136,6 +160,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             {
                 // Clear saved user data
                 Properties.Settings.Default.UserId = 0;
+                Properties.Settings.Default.Username = string.Empty;
                 Properties.Settings.Default.RememberMe = false;
                 Properties.Settings.Default.Save();
 
@@ -157,6 +182,32 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             {
                 System.Windows.MessageBox.Show($"Lỗi khi đăng xuất: {ex.Message}", "Lỗi",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void LoadUserInfo()
+        {
+            // Load username from settings
+            var savedUsername = Properties.Settings.Default.Username;
+            if (!string.IsNullOrEmpty(savedUsername))
+            {
+                Username = savedUsername;
+            }
+        }
+
+        private void UpdateUserGreeting()
+        {
+            if (!string.IsNullOrEmpty(_username))
+            {
+                UserGreeting = string.Format("Hello, {0}", _username);
+            }
+            else
+            {
+                UserGreeting = "Hello, Guest";
             }
         }
 

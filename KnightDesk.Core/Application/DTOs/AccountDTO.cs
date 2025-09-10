@@ -24,4 +24,9 @@
     {
         public int Id { get; set; }
     }
+    public class UpdateCharacterDTO
+    {
+        public int Id { get; set; }
+        public string CharacterName { get; set; } = string.Empty;
+    }
 }

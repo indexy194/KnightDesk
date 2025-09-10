@@ -1,0 +1,15 @@
+services:
+  # Web Service (API)
+  - type: web
+    name: knightdesk-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:10000
+    healthCheckPath: /health
