@@ -56,20 +56,63 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Database Configuration with comprehensive logging
 var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
+
+Console.WriteLine("=== DATABASE CONFIGURATION DEBUG ===");
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"DATABASE_URL present: {!string.IsNullOrEmpty(dbUrl)}");
+
 if (!string.IsNullOrEmpty(dbUrl))
 {
-    var connectionString = ConvertPostgresUrlToNpgsql(dbUrl);
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(connectionString));
+    Console.WriteLine($"DATABASE_URL length: {dbUrl.Length}");
+    Console.WriteLine($"DATABASE_URL starts with 'postgres://': {dbUrl.StartsWith("postgres://")}");
+    
+    // Log first and last 10 characters for debugging (without exposing full credentials)
+    if (dbUrl.Length > 20)
+    {
+        Console.WriteLine($"DATABASE_URL format: {dbUrl.Substring(0, 10)}...{dbUrl.Substring(dbUrl.Length - 10)}");
+    }
+    
+    try
+    {
+        connectionString = ConvertPostgresUrlToNpgsql(dbUrl);
+        Console.WriteLine("✅ DATABASE_URL successfully converted to Npgsql format");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error converting DATABASE_URL: {ex.Message}");
+        throw;
+    }
 }
+else
+{
+    Console.WriteLine("⚠️ DATABASE_URL not found, using fallback connection");
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("No database connection string available");
+    Console.WriteLine("Using DefaultConnection from appsettings.json");
+}
+
+Console.WriteLine("=== END DATABASE CONFIGURATION DEBUG ===");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Helper to convert postgres:// to Npgsql format
 static string ConvertPostgresUrlToNpgsql(string url)
 {
+    Console.WriteLine("Converting DATABASE_URL to Npgsql format...");
+    
     var uri = new Uri(url);
     var userInfo = uri.UserInfo.Split(':');
-    return $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    
+    Console.WriteLine($"Parsed components - Host: {uri.Host}, Port: {uri.Port}, Database: {uri.AbsolutePath.TrimStart('/')}, Username: {userInfo[0]}");
+    
+    var result = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    
+    Console.WriteLine("✅ Conversion completed");
+    return result;
 }
 
 // Repository Pattern
@@ -110,30 +153,55 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
-// Initialize database
+// Initialize database with comprehensive logging
+Console.WriteLine("=== DATABASE INITIALIZATION DEBUG ===");
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        // Log the actual connection string being used (without password)
+        var connectionString = context.Database.GetConnectionString();
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            // Mask password for logging
+            var maskedConnectionString = connectionString.Contains("Password=") 
+                ? System.Text.RegularExpressions.Regex.Replace(connectionString, @"Password=[^;]*", "Password=***")
+                : connectionString;
+            Console.WriteLine($"Using connection string: {maskedConnectionString}");
+        }
+        
         Console.WriteLine("Attempting to connect to database...");
         
         // Test database connection with timeout
         var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        
+        Console.WriteLine("Testing database connectivity...");
         var canConnect = await context.Database.CanConnectAsync(cancellationTokenSource.Token);
         
         if (!canConnect)
         {
+            Console.WriteLine("❌ CanConnectAsync returned false");
+            Console.WriteLine("This usually means:");
+            Console.WriteLine("1. Database server is not reachable");
+            Console.WriteLine("2. Wrong host/port in connection string");
+            Console.WriteLine("3. Database credentials are incorrect");
+            Console.WriteLine("4. SSL/TLS configuration issues");
+            Console.WriteLine("5. Database server is not accepting connections");
+            
             throw new InvalidOperationException("Cannot connect to database - CanConnectAsync returned false");
         }
         
         Console.WriteLine("✅ Database connection successful!");
         
         // Ensure database is created
+        Console.WriteLine("Ensuring database schema exists...");
         await context.Database.EnsureCreatedAsync(cancellationTokenSource.Token);
         Console.WriteLine("✅ Database schema ensured.");
         
         // Seed data
+        Console.WriteLine("Starting database seeding...");
         var seedingService = scope.ServiceProvider.GetRequiredService<DataSeedingService>();
         await seedingService.SeedAllAsync();
         Console.WriteLine("✅ Database seeding completed.");
@@ -146,11 +214,20 @@ using (var scope = app.Services.CreateScope())
         if (ex.InnerException != null)
         {
             Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            Console.WriteLine($"Inner exception type: {ex.InnerException.GetType().Name}");
         }
         
-        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        Console.WriteLine("=== TROUBLESHOOTING TIPS ===");
+        Console.WriteLine("1. Verify DATABASE_URL environment variable is set correctly");
+        Console.WriteLine("2. Check that PostgreSQL database service is running on Render");
+        Console.WriteLine("3. Ensure database credentials are valid");
+        Console.WriteLine("4. Verify network connectivity to database host");
+        Console.WriteLine("=== END TROUBLESHOOTING TIPS ===");
+        
+        Console.WriteLine($"Full stack trace: {ex.StackTrace}");
         throw;
     }
 }
+Console.WriteLine("=== END DATABASE INITIALIZATION DEBUG ===");
 
 app.Run();
