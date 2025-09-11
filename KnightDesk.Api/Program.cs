@@ -5,6 +5,7 @@ using KnightDesk.Infrastructure.Repositories;
 using KnightDesk.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,67 +56,21 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Database Configuration
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-string connectionString;
-
-Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
-Console.WriteLine($"DATABASE_URL present: {!string.IsNullOrEmpty(databaseUrl)}");
-
-if (!string.IsNullOrEmpty(databaseUrl))
+var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(dbUrl))
 {
-    Console.WriteLine($"Raw DATABASE_URL length: {databaseUrl.Length}");
-    Console.WriteLine($"DATABASE_URL starts with postgres://: {databaseUrl.StartsWith("postgres://")}");
-    
-    try
-    {
-        // Parse Render.com DATABASE_URL format (postgres://user:password@host:port/database)
-        if (databaseUrl.StartsWith("postgres://"))
-        {
-            var uri = new Uri(databaseUrl);
-            
-            // Validate URI components
-            if (string.IsNullOrEmpty(uri.Host))
-                throw new ArgumentException("Database host is missing from DATABASE_URL");
-            
-            if (string.IsNullOrEmpty(uri.UserInfo))
-                throw new ArgumentException("Database credentials are missing from DATABASE_URL");
-            
-            var userInfo = uri.UserInfo.Split(':');
-            if (userInfo.Length != 2)
-                throw new ArgumentException("Database credentials format is invalid in DATABASE_URL");
-            
-            var database = uri.AbsolutePath.TrimStart('/');
-            if (string.IsNullOrEmpty(database))
-                throw new ArgumentException("Database name is missing from DATABASE_URL");
-            
-            connectionString = $"Host={uri.Host};Port={uri.Port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-            
-            Console.WriteLine($"Parsed connection - Host: {uri.Host}, Port: {uri.Port}, Database: {database}, Username: {userInfo[0]}");
-        }
-        else
-        {
-            // Assume it's already in Npgsql format
-            connectionString = databaseUrl;
-            Console.WriteLine("Using DATABASE_URL as-is (not postgres:// format)");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error parsing DATABASE_URL: {ex.Message}");
-        throw new InvalidOperationException($"Invalid DATABASE_URL format: {ex.Message}", ex);
-    }
-}
-else
-{
-    // Fallback to local development connection
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? throw new InvalidOperationException("Database connection string not found");
-    Console.WriteLine("Using local development connection string");
+    var connectionString = ConvertPostgresUrlToNpgsql(dbUrl);
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
 }
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+// Helper to convert postgres:// to Npgsql format
+static string ConvertPostgresUrlToNpgsql(string url)
+{
+    var uri = new Uri(url);
+    var userInfo = uri.UserInfo.Split(':');
+    return $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
 
 // Repository Pattern
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
