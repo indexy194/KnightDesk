@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure port for Render.com deployment
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -68,6 +67,7 @@ if (!string.IsNullOrEmpty(dbUrl))
 {
     Console.WriteLine($"DATABASE_URL length: {dbUrl.Length}");
     Console.WriteLine($"DATABASE_URL starts with 'postgres://': {dbUrl.StartsWith("postgres://")}");
+    Console.WriteLine($"DATABASE_URL starts with 'postgresql://': {dbUrl.StartsWith("postgresql://")}");
     
     // Log first and last 10 characters for debugging (without exposing full credentials)
     if (dbUrl.Length > 20)
@@ -99,17 +99,26 @@ Console.WriteLine("=== END DATABASE CONFIGURATION DEBUG ===");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Helper to convert postgres:// to Npgsql format
+// Helper to convert postgres:// or postgresql:// to Npgsql format
 static string ConvertPostgresUrlToNpgsql(string url)
 {
     Console.WriteLine("Converting DATABASE_URL to Npgsql format...");
     
+    // Handle both postgres:// and postgresql:// formats
+    if (!url.StartsWith("postgres://") && !url.StartsWith("postgresql://"))
+    {
+        throw new ArgumentException($"Unsupported URL format. Expected postgres:// or postgresql://, got: {url.Substring(0, Math.Min(20, url.Length))}...");
+    }
+    
     var uri = new Uri(url);
     var userInfo = uri.UserInfo.Split(':');
     
-    Console.WriteLine($"Parsed components - Host: {uri.Host}, Port: {uri.Port}, Database: {uri.AbsolutePath.TrimStart('/')}, Username: {userInfo[0]}");
+    // Handle default port if not specified
+    var port = uri.Port == -1 ? 5432 : uri.Port;
     
-    var result = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    Console.WriteLine($"Parsed components - Host: {uri.Host}, Port: {port}, Database: {uri.AbsolutePath.TrimStart('/')}, Username: {userInfo[0]}");
+    
+    var result = $"Host={uri.Host};Port={port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
     
     Console.WriteLine("✅ Conversion completed");
     return result;
