@@ -162,13 +162,13 @@ using (var scope = app.Services.CreateScope())
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
         // Log the actual connection string being used (without password)
-        var connectionString = context.Database.GetConnectionString();
-        if (!string.IsNullOrEmpty(connectionString))
+        var actualConnectionString = context.Database.GetConnectionString();
+        if (!string.IsNullOrEmpty(actualConnectionString))
         {
             // Mask password for logging
-            var maskedConnectionString = connectionString.Contains("Password=") 
-                ? System.Text.RegularExpressions.Regex.Replace(connectionString, @"Password=[^;]*", "Password=***")
-                : connectionString;
+            var maskedConnectionString = actualConnectionString.Contains("Password=") 
+                ? System.Text.RegularExpressions.Regex.Replace(actualConnectionString, @"Password=[^;]*", "Password=***")
+                : actualConnectionString;
             Console.WriteLine($"Using connection string: {maskedConnectionString}");
         }
         
