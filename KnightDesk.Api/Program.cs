@@ -10,7 +10,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure port for Render.com deployment
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Add services to the container.
@@ -56,15 +56,62 @@ builder.Services.AddCors(options =>
 });
 
 // Database Configuration
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-    ?? builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? throw new InvalidOperationException("Database connection string not found");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
 
-// Parse Render.com DATABASE_URL format if it exists
-if (connectionString.StartsWith("postgres://"))
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"DATABASE_URL present: {!string.IsNullOrEmpty(databaseUrl)}");
+
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    var uri = new Uri(connectionString);
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+    Console.WriteLine($"Raw DATABASE_URL length: {databaseUrl.Length}");
+    Console.WriteLine($"DATABASE_URL starts with postgres://: {databaseUrl.StartsWith("postgres://")}");
+    
+    try
+    {
+        // Parse Render.com DATABASE_URL format (postgres://user:password@host:port/database)
+        if (databaseUrl.StartsWith("postgres://"))
+        {
+            var uri = new Uri(databaseUrl);
+            
+            // Validate URI components
+            if (string.IsNullOrEmpty(uri.Host))
+                throw new ArgumentException("Database host is missing from DATABASE_URL");
+            
+            if (string.IsNullOrEmpty(uri.UserInfo))
+                throw new ArgumentException("Database credentials are missing from DATABASE_URL");
+            
+            var userInfo = uri.UserInfo.Split(':');
+            if (userInfo.Length != 2)
+                throw new ArgumentException("Database credentials format is invalid in DATABASE_URL");
+            
+            var database = uri.AbsolutePath.TrimStart('/');
+            if (string.IsNullOrEmpty(database))
+                throw new ArgumentException("Database name is missing from DATABASE_URL");
+            
+            connectionString = $"Host={uri.Host};Port={uri.Port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+            
+            Console.WriteLine($"Parsed connection - Host: {uri.Host}, Port: {uri.Port}, Database: {database}, Username: {userInfo[0]}");
+        }
+        else
+        {
+            // Assume it's already in Npgsql format
+            connectionString = databaseUrl;
+            Console.WriteLine("Using DATABASE_URL as-is (not postgres:// format)");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error parsing DATABASE_URL: {ex.Message}");
+        throw new InvalidOperationException($"Invalid DATABASE_URL format: {ex.Message}", ex);
+    }
+}
+else
+{
+    // Fallback to local development connection
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("Database connection string not found");
+    Console.WriteLine("Using local development connection string");
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -111,11 +158,44 @@ app.MapControllers();
 // Initialize database
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await context.Database.EnsureCreatedAsync();
-    
-    var seedingService = scope.ServiceProvider.GetRequiredService<DataSeedingService>();
-    await seedingService.SeedAllAsync();
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        Console.WriteLine("Attempting to connect to database...");
+        
+        // Test database connection with timeout
+        var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var canConnect = await context.Database.CanConnectAsync(cancellationTokenSource.Token);
+        
+        if (!canConnect)
+        {
+            throw new InvalidOperationException("Cannot connect to database - CanConnectAsync returned false");
+        }
+        
+        Console.WriteLine("✅ Database connection successful!");
+        
+        // Ensure database is created
+        await context.Database.EnsureCreatedAsync(cancellationTokenSource.Token);
+        Console.WriteLine("✅ Database schema ensured.");
+        
+        // Seed data
+        var seedingService = scope.ServiceProvider.GetRequiredService<DataSeedingService>();
+        await seedingService.SeedAllAsync();
+        Console.WriteLine("✅ Database seeding completed.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Database initialization failed: {ex.Message}");
+        Console.WriteLine($"Exception type: {ex.GetType().Name}");
+        
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+        }
+        
+        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        throw;
+    }
 }
 
 app.Run();

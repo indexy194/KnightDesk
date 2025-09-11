@@ -12,4 +12,6 @@ services:
         value: Production
       - key: ASPNETCORE_URLS
         value: http://+:10000
+      - key: PORT
+        value: "10000"
     healthCheckPath: /health
