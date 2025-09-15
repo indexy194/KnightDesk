@@ -47,9 +47,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
             _characterIndexOptions = new ObservableCollection<CharacterIndexOption>
             {
-                new CharacterIndexOption { Value = 1, DisplayText = "Nhân vật 1" },
-                new CharacterIndexOption { Value = 2, DisplayText = "Nhân vật 2" },
-                new CharacterIndexOption { Value = 3, DisplayText = "Nhân vật 3" }
+                new CharacterIndexOption { Value = 0, DisplayText = "Nhân vật 1" },
+                new CharacterIndexOption { Value = 1, DisplayText = "Nhân vật 2" },
+                new CharacterIndexOption { Value = 2, DisplayText = "Nhân vật 3" }
             };
 
             // Initialize commands

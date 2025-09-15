@@ -5,9 +5,6 @@
     <Setting Name="Username" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="BaseUrl" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://localhost:5204/api</Value>
-    </Setting>
     <Setting Name="UserId" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>

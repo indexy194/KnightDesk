@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Web.Script.Serialization;
+using KnightDesk.Presentation.WPF.Constants;
 using KnightDesk.Presentation.WPF.DTOs;
 
 namespace KnightDesk.Presentation.WPF.Services
@@ -28,7 +29,7 @@ namespace KnightDesk.Presentation.WPF.Services
 
         public AccountServices()
         {
-            _baseUrl = Properties.Settings.Default.BaseUrl;
+            _baseUrl = BaseApiUri.BaseApiUrl;
         }
 
         public void GetAllAccountsAsync(Action<GeneralResponseDTO<IEnumerable<AccountDTO>>> callback)
@@ -38,7 +39,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts", _baseUrl));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -79,7 +80,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/{1}", _baseUrl, id));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/{1}", _baseUrl, id));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -120,7 +121,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/user/{1}", _baseUrl, userId));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/user/{1}", _baseUrl, userId));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -162,7 +163,7 @@ namespace KnightDesk.Presentation.WPF.Services
                 try
                 {
                     var encodedSearchText = Uri.EscapeDataString(searchText ?? string.Empty);
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/search?searchText={1}", _baseUrl, encodedSearchText));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/search?searchText={1}", _baseUrl, encodedSearchText));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -206,7 +207,7 @@ namespace KnightDesk.Presentation.WPF.Services
                     var serializer = new JavaScriptSerializer();
                     var json = serializer.Serialize(account);
 
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/add-account", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/add-account", _baseUrl));
                     request.Method = "POST";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -254,7 +255,7 @@ namespace KnightDesk.Presentation.WPF.Services
                     var serializer = new JavaScriptSerializer();
                     var json = serializer.Serialize(account);
 
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/update-account", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/update-account", _baseUrl));
                     request.Method = "PUT";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -299,7 +300,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/{1}", _baseUrl, id));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/{1}", _baseUrl, id));
                     request.Method = "DELETE";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -340,7 +341,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/{1}/toggle-favorite", _baseUrl, id));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/{1}/toggle-favorite", _baseUrl, id));
                     request.Method = "PUT";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -382,7 +383,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/favorites", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/favorites", _baseUrl));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -423,7 +424,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/favorites/user/{1}", _baseUrl, userId));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/favorites/user/{1}", _baseUrl, userId));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";
@@ -466,7 +467,7 @@ namespace KnightDesk.Presentation.WPF.Services
                 {
                     var serializer = new JavaScriptSerializer();
                     var json = serializer.Serialize(entry);
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/accounts/update-character", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/accounts/update-character", _baseUrl));
                     request.Method = "PUT";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";

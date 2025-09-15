@@ -1,3 +1,4 @@
+using KnightDesk.Presentation.WPF.Constants;
 using KnightDesk.Presentation.WPF.DTOs;
 using KnightDesk.Presentation.WPF.Services;
 using System;
@@ -202,8 +203,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 // First, check network connectivity to server
                 var connectionRequest = new ServerConnectionRequestDTO
                 {
-                    BaseUrl = @"http://localhost:5204",
-                    TimeoutMs = 3000
+                    BaseUrl = BaseApiUri.BaseApiUrl,
+                    TimeoutMs = 10000
                 };
 
                 ServerConnectionServices.CheckServerAsync(connectionRequest, connectionResponse =>
@@ -213,7 +214,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                         if (!connectionResponse.IsReachable)
                         {
                             // Server not reachable - stay on login page with error message
-                            ErrorMessage = "Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.";
+                            ErrorMessage = "Hãy đăng nhập lại!";
                             return;
                         }
 

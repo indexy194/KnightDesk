@@ -1,4 +1,5 @@
-﻿using KnightDesk.Presentation.WPF.DTOs;
+﻿using KnightDesk.Presentation.WPF.Constants;
+using KnightDesk.Presentation.WPF.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,7 +25,7 @@ namespace KnightDesk.Presentation.WPF.Services
 
         public ServerInfoServices()
         {
-            _baseUrl = Properties.Settings.Default.BaseUrl;
+            _baseUrl = BaseApiUri.BaseApiUrl;
         }
 
         public void GetAllServersAsync(Action<GeneralResponseDTO<IEnumerable<ServerInfoDTO>>> callback)
@@ -34,7 +35,7 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/serverinfo", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/serverinfo", _baseUrl));
                     request.Method = "GET";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";

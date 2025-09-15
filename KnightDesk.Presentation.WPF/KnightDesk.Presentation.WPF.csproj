@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>KnightDesk.Presentation.WPF</RootNamespace>
     <AssemblyName>KnightDesk.Presentation.WPF</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -44,6 +44,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -57,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Constants\BaseApiUri.cs" />
+    <Compile Include="Constants\GameCommandConstants.cs" />
+    <Compile Include="Constants\GameConfigConstants.cs" />
+    <Compile Include="Constants\TcpConstants.cs" />
     <Compile Include="DTOs\AccountDTO.cs" />
     <Compile Include="DTOs\GeneralResponseDTO.cs" />
     <Compile Include="DTOs\ServerConnectionDTO.cs" />
@@ -78,10 +83,10 @@
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\AccountServices.cs" />
-    <Compile Include="Services\GameProcessService.cs" />
     <Compile Include="Services\LoginServices.cs" />
     <Compile Include="Services\ServerConnectionServices.cs" />
     <Compile Include="Services\ServerInfoServices.cs" />
+    <Compile Include="Services\TcpServices.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\AccountPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

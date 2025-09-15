@@ -202,11 +202,11 @@
                 <ContentPresenter Content="{Binding DisplayedPage}"/>
                 <Button  Command="{Binding CloseAppCommand}"
                          Background="Transparent"
-                         Width="20" 
+                         Width="18" 
                          HorizontalAlignment="Right" 
                          BorderThickness="0"
                          VerticalAlignment="Top"
-                         Margin="0 10 10 0" >
+                         Margin="0 8 8 0" >
                     <fa:ImageAwesome Icon="Close" Foreground="White"/>
                 </Button>
 

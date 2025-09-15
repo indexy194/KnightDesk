@@ -1,3 +1,4 @@
+using KnightDesk.Presentation.WPF.Constants;
 using KnightDesk.Presentation.WPF.DTOs;
 using System;
 using System.ComponentModel;
@@ -17,7 +18,7 @@ namespace KnightDesk.Presentation.WPF.Services
 
         public LoginServices()
         {
-            _baseUrl = Properties.Settings.Default.BaseUrl;
+            _baseUrl = BaseApiUri.BaseApiUrl;
         }
 
         public void LoginAsync(LoginRequestDTO loginRequest, Action<GeneralResponseDTO<UserDTO>> callback)
@@ -30,7 +31,7 @@ namespace KnightDesk.Presentation.WPF.Services
                     var serializer = new JavaScriptSerializer();
                     var json = serializer.Serialize(loginRequest);
 
-                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/users/login", _baseUrl));
+                    var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/api/users/login", _baseUrl));
                     request.Method = "POST";
                     request.ContentType = "application/json";
                     request.Accept = "application/json";

@@ -425,13 +425,31 @@
                             <TextBlock Text="Tên Focus" 
                                        Style="{StaticResource textLabel}" 
                                        FontSize="12"
-                                       Margin="0 0 0 10"/>
-                            <TextBox Text="{Binding SelectedAccount.AutoSettings.NameFocus}"
-                                     Height="25" 
-                                     Background="White" 
-                                     BorderBrush="#E0E0E0"
-                                     Padding="5"
-                                     IsEnabled="{Binding CanUseAutoControls}"/>
+                                       Margin="0 0 0 5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding SelectedAccount.AutoSettings.NameFocus, UpdateSourceTrigger=PropertyChanged}"
+                                         Height="25" 
+                                         Background="White" 
+                                         Foreground="Black"
+                                         BorderBrush="#E0E0E0"
+                                         Padding="5"
+                                         Margin="0 0 5 0"
+                                         IsEnabled="{Binding CanUseAutoControls}"/>
+                                <Button Grid.Column="1"
+                                        Command="{Binding SendNameFocusCommand}"
+                                        Height="25"
+                                        Width="60"
+                                        Content="Gửi"
+                                        Background="#4CAF50"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        IsEnabled="{Binding CanUseAutoControls}"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
 
@@ -484,13 +502,11 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Button Content="Load" 
-                                        Grid.Column="0"
+                                <Button Command="{Binding SendMountCommand}"
+                                        Content="Load" 
+                                        Grid.ColumnSpan="2"
                                         Style="{StaticResource loadButton}"
-                                        IsEnabled="{Binding CanUseAutoControls}"/>
-                                <Button Content="Load" 
-                                        Grid.Column="1"
-                                        Style="{StaticResource loadButton}"
+                                        HorizontalAlignment="Center"
                                         IsEnabled="{Binding CanUseAutoControls}"/>
                             </Grid>
                         </Grid>
