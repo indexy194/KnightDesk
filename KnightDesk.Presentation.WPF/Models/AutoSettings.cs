@@ -78,7 +78,9 @@ namespace KnightDesk.Presentation.WPF.Models
                     "Trung Thu",
                     "Halloween",
                     "Black Friday",
-                    "Noel"
+                    "Noel",
+                    "Chiếm thành",
+                    "Chiếm mỏ"
                 };
             }
         }
@@ -92,7 +94,7 @@ namespace KnightDesk.Presentation.WPF.Models
                     "Sát Thủ",
                     "Chiến Binh",
                     "Pháp Sư",
-                    "Xạ thủ"
+                    "Xạ Thủ"
                 };
             }
         }
