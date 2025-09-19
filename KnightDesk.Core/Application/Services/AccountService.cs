@@ -17,7 +17,7 @@ namespace KnightDesk.Core.Application.Services
         Task<GeneralResponseDTO<AccountDTO>> UpdateAccountAsync(UpdateAccountDTO account);
         Task<GeneralResponseDTO<bool>> DeleteAccountAsync(int id);
         Task<GeneralResponseDTO<bool>> ToggleFavoriteAsync(int accountId);
-        Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username);
+        Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username, int userId);
         Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetListAccountsByUserId(int userId);
         //get account favorite by user id
         Task<GeneralResponseDTO<IEnumerable<AccountDTO>>> GetFavoriteAccountsByUserId(int userId);
