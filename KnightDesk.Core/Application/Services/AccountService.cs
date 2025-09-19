@@ -215,7 +215,7 @@ namespace KnightDesk.Core.Application.Services
                     };
                 }
                 // Check if username already exists for this server
-                var usernameExistsResult = await IsUsernameExistsAsync(account.Username!);
+                var usernameExistsResult = await IsUsernameExistsAsync(account.Username!, account.UserId);
                 if (usernameExistsResult.Data)
                 {
                     return new GeneralResponseDTO<AccountDTO>
@@ -435,7 +435,7 @@ namespace KnightDesk.Core.Application.Services
             return true;
         }
 
-        public async Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username)
+        public async Task<GeneralResponseDTO<bool>> IsUsernameExistsAsync(string username, int userId)
         {
             try
             {
@@ -449,7 +449,7 @@ namespace KnightDesk.Core.Application.Services
                     };
                 }
 
-                var exists = await _unitOfWork.Accounts.IsUsernameExistsAsync(username);
+                var exists = await _unitOfWork.Accounts.IsUsernameExistsAsync(username, userId);
                 return new GeneralResponseDTO<bool>
                 {
                     Message = exists ? "Username already exists" : "Username is available",
