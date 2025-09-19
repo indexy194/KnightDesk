@@ -39,7 +39,7 @@ namespace KnightDesk.Infrastructure.Repositories
         public async Task<bool> IsUsernameExistsAsync(string username, int userId)
         {
             return await _dbSet
-                .AnyAsync(a => a.Username == username && a.UserId == userId;
+                .AnyAsync(a => a.Username == username && a.UserId == userId);
         }
 
         public async Task<IEnumerable<Account>> SearchAccountsAsync(string searchTerm)
