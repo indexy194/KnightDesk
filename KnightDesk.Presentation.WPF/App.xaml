@@ -179,34 +179,45 @@
 
         <Style x:Key="textLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#fcfcfc" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0 10 0 0"/>
         </Style>
 
 
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="#3F375F" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Padding" Value="15 12" />
+            <Setter Property="Padding" Value="5 5" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="#fcfcfc" />
             <Style.Resources>
                 <Style TargetType="{x:Type Border}">
-                    <Setter Property="CornerRadius" Value="15"/>
+                    <Setter Property="CornerRadius" Value="10"/>
                 </Style>
             </Style.Resources>
         </Style>
-        <Style TargetType="PasswordBox" x:Key="pwBox">
-            <Setter Property="Background" Value="#3F375F" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Padding" Value="15 12" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="#fcfcfc" />
-            <Style.Resources>
-                <Style TargetType="{x:Type Border}">
-                    <Setter Property="CornerRadius" Value="15"/>
-                </Style>
-            </Style.Resources>
+        <Style TargetType="PasswordBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#fcfcfc"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border CornerRadius="10"
+                        Background="#5A5470"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                  Margin="5 5"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Stretch" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
 
@@ -292,6 +303,20 @@
                                     </Border.Background>
 
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
+                <!-- Disabled -->
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border CornerRadius="5" Padding="20 0 20 0" BorderThickness="0" Background="White">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>

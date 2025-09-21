@@ -46,7 +46,6 @@
 
                                 <TextBox Text="{Binding GamePath, UpdateSourceTrigger=PropertyChanged}" 
                                          Height="35" 
-                                         Padding="10 0" 
                                          VerticalAlignment="Center"/>
 
                                 <Button Grid.Column="1" 
@@ -66,7 +65,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Pending..." 
+                            <TextBlock Text="Coming SOON..." 
                                        Style="{StaticResource textLabel}" 
                                        FontSize="14" 
                                        Margin="0 0 0 5"/>
@@ -79,7 +78,6 @@
 
                                 <TextBox Text="{Binding DataPath, UpdateSourceTrigger=PropertyChanged}" 
                                          Height="35" 
-                                         Padding="10 0" 
                                          VerticalAlignment="Center"/>
 
                                 <Button Grid.Column="1" 
@@ -100,7 +98,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Pending..." 
+                            <TextBlock Text="Coming SOON..." 
                                        Style="{StaticResource textLabel}" 
                                        FontSize="14" 
                                        Margin="0 0 0 5"/>
@@ -113,7 +111,6 @@
 
                                 <TextBox Text="{Binding ConfigPath, UpdateSourceTrigger=PropertyChanged}" 
                                          Height="35" 
-                                         Padding="10 0" 
                                          VerticalAlignment="Center"/>
 
                                 <Button Grid.Column="1" 

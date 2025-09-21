@@ -61,26 +61,20 @@
                     <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Height="35" 
                              Width="200"
-                             FontSize="14" 
-                             Padding="10" 
                              Margin="15 0 0 0" 
                              BorderThickness="0" 
+                             Padding="5 8"
                              Background="#5A5470" 
+                             VerticalAlignment="Center"
                              Foreground="White" />
                 </StackPanel>
                 <!-- password -->
                 <StackPanel Margin="50 20 50 0" Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Key" Foreground="White" Width="20" VerticalAlignment="Center"/>
                     <PasswordBox x:Name="pbPassword"
-                                 Style="{StaticResource pwBox}"
                                 Height="35" 
                                 Width="200"
-                                FontSize="14" 
-                                Padding="10"
                                 Margin="15 0 0 0"
-                                BorderThickness="0" 
-                                Background="#5A5470" 
-                                Foreground="White"
                                 PasswordChanged="PasswordBox_PasswordChanged" />
                 </StackPanel>
                 

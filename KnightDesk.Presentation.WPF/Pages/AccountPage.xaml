@@ -176,37 +176,33 @@
                            Style="{StaticResource textLabel}" 
                            FontSize="16" 
                            FontWeight="SemiBold" 
-                           Margin="0 10 0 20"/>
+                           Margin="0 15 0 5"/>
 
                 <!-- Username -->
-                <TextBlock Text="Username" Style="{StaticResource textLabel}" Margin="0 10 0 5"/>
+                <TextBlock Text="Username" Style="{StaticResource textLabel}" Margin="0 5"/>
                 <TextBox Text="{Binding CurrentAccount.Username, UpdateSourceTrigger=PropertyChanged}" 
-                         Height="30" 
-                         Padding="10 0"/>
+                         Height="30"/>
 
                 <!-- Password -->
-                <TextBlock Text="Password" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
-                <PasswordBox x:Name="PasswordBox"
-                             Height="30" 
-                             Padding="10 0"
+                <TextBlock Text="Password" Style="{StaticResource textLabel}" Margin="0 5"/>
+                <PasswordBox Height="30"
                              PasswordChanged="PasswordBox_PasswordChanged"/>
 
                 <!-- Character Name -->
-                <TextBlock Text="Character Name" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
+                <TextBlock Text="Character Name" Style="{StaticResource textLabel}" Margin="0 5"/>
                 <TextBox Text="{Binding CurrentAccount.CharacterName, UpdateSourceTrigger=PropertyChanged}" 
                          Height="30" 
-                         Padding="10 0"
                          IsEnabled="{Binding IsCharacterNameEnabled}"/>
 
                 <!-- Index Character -->
-                <TextBlock Text="Index Character" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
+                <TextBlock Text="Index Character" Style="{StaticResource textLabel}" Margin="0 5"/>
                 <ComboBox ItemsSource="{Binding CharacterIndexOptions}"
                           SelectedItem="{Binding SelectedCharacterIndex}"
                           DisplayMemberPath="DisplayText"
                           Height="30"/>
 
                 <!-- Server Selection -->
-                <TextBlock Text="Server" Style="{StaticResource textLabel}" Margin="0 15 0 5"/>
+                <TextBlock Text="Server" Style="{StaticResource textLabel}" Margin="0 5"/>
                 <ComboBox ItemsSource="{Binding Servers}"
                           SelectedItem="{Binding SelectedServer}"
                           DisplayMemberPath="Name"

@@ -6,7 +6,7 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:local="clr-namespace:KnightDesk.Presentation.WPF.Pages"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="630" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -180,23 +180,7 @@
                                Style="{StaticResource textLabel}" 
                                FontSize="16" 
                                FontWeight="SemiBold" 
-                               Margin="0 0 0 15"/>
-                    
-                    <!-- Connection Status -->
-                    <TextBlock Text="{Binding ConnectionStatusText}"
-                               FontSize="10" 
-                               Margin="0 5 0 10">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource textLabel}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsConnectionStatusVisible}" Value="True">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                               Margin="0 0 0 5"/>
                     <!-- Auto State -->
                     <Border Style="{StaticResource toolsBorder}"
                             Margin="0 10 0 0">
@@ -222,8 +206,8 @@
                                     Command="{Binding ToggleAutoStateCommand}"
                                     IsEnabled="{Binding CanUseAutoControls}">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
-                                        <Setter Property="Background" Value="#666666"/>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFF"/>
                                         <Setter Property="Opacity" Value="0.5"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoState}" Value="True">
@@ -234,6 +218,8 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+                            
+                                
 
                             <!-- OFF Button -->
                             <Button Grid.Column="2" 
@@ -245,12 +231,14 @@
                                     Command="{Binding ToggleAutoStateCommand}"
                                     IsEnabled="{Binding CanUseAutoControls}">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
+                                    <Style TargetType="Button">
                                         <Setter Property="Background" Value="#F44336"/>
+                                        <Setter Property="Foreground" Value="#FFF"/>
                                         <Setter Property="Opacity" Value="1.0"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoState}" Value="True">
                                                 <Setter Property="Background" Value="#666666"/>
+                                                
                                                 <Setter Property="Opacity" Value="0.5"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -291,8 +279,8 @@
                                         Command="{Binding ToggleAutoEventCommand}"
                                         IsEnabled="{Binding CanUseAutoControls}">
                                     <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
-                                            <Setter Property="Background" Value="#666666"/>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#FFF"/>
                                             <Setter Property="Opacity" Value="0.5"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoEvent}" Value="True">
@@ -314,8 +302,9 @@
                                         Command="{Binding ToggleAutoEventCommand}"
                                         IsEnabled="{Binding CanUseAutoControls}">
                                     <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
+                                        <Style TargetType="Button">
                                             <Setter Property="Background" Value="#F44336"/>
+                                            <Setter Property="Foreground" Value="#FFF"/>
                                             <Setter Property="Opacity" Value="1.0"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoEvent}" Value="True">
@@ -370,8 +359,8 @@
                                         Command="{Binding ToggleAutoEquipCommand}"
                                         IsEnabled="{Binding CanUseAutoControls}">
                                     <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
-                                            <Setter Property="Background" Value="#666666"/>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#FFF"/>
                                             <Setter Property="Opacity" Value="0.5"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoEquip}" Value="True">
@@ -393,8 +382,9 @@
                                         Command="{Binding ToggleAutoEquipCommand}"
                                         IsEnabled="{Binding CanUseAutoControls}">
                                     <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource toolButtons}">
+                                        <Style TargetType="Button">
                                             <Setter Property="Background" Value="#F44336"/>
+                                            <Setter Property="Foreground" Value="#FFF"/>
                                             <Setter Property="Opacity" Value="1.0"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding SelectedAccount.AutoSettings.AutoEquip}" Value="True">
@@ -437,9 +427,20 @@
                                          Background="White" 
                                          Foreground="Black"
                                          BorderBrush="#E0E0E0"
-                                         Padding="5"
+                                         Padding="10 0"
                                          Margin="0 0 5 0"
-                                         IsEnabled="{Binding CanUseAutoControls}"/>
+                                         IsEnabled="{Binding CanUseAutoControls}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="Foreground" Value="#888888"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsFocused" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
                                 <Button Grid.Column="1"
                                         Command="{Binding SendNameFocusCommand}"
                                         Height="25"
@@ -466,7 +467,7 @@
                             <TextBlock Text="Auto Mount" 
                                        Style="{StaticResource textLabel}" 
                                        FontSize="12" 
-                                       Margin="0 0 0 10"/>
+                                       Margin="0 0 0 5"/>
 
                             <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
@@ -496,7 +497,7 @@
                                           IsEnabled="{Binding CanUseAutoControls}"/>
                             </Grid>
 
-                            <Grid Grid.Row="2" Margin="0 10 0 0">
+                            <Grid Grid.Row="2" Margin="0 8 0 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
