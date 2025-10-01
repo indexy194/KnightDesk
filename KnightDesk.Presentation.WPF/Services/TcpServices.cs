@@ -267,7 +267,6 @@ namespace KnightDesk.Presentation.WPF.Services
             {
                 if (accountId > 0)
                 {
-                    Console.WriteLine($"cac abcd: {accountId}");
                     UnregisterGameClient(accountId);
                     ClientDisconnected?.Invoke(accountId);
                 }
@@ -391,7 +390,7 @@ namespace KnightDesk.Presentation.WPF.Services
                         var buffer = new byte[GameConfigConstants.DEFAULT_BUFFER_SIZE];
                         
                         // Set read timeout to avoid indefinite blocking
-                        stream.ReadTimeout = 5000; // 5 seconds timeout
+                        stream.ReadTimeout = 3000; // 5 seconds timeout
                         
                         try
                         {

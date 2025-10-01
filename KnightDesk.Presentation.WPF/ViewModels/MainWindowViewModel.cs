@@ -11,14 +11,22 @@ namespace KnightDesk.Presentation.WPF.ViewModels
     {
         private UserControl _currentPage;
         private UserControl _managerPage;
+        private UserControl _accountPage;
+        private UserControl _settingsPage;
+        private UserControl _logScreenPage;
+        private UserControl _serverConfigPage;
         private string _username;
         private string _userGreeting;
         private string _activeMenu = "Manager";
 
         public MainWindowViewModel()
         {
-            // Initialize pages
+            // Initialize pages once to preserve state
             _managerPage = new ManagerPage();
+            _accountPage = new AccountPage();
+            _settingsPage = new SettingsPage();
+            _logScreenPage = new LogScreenPage();
+            _serverConfigPage = new ServerConfigPage();
 
             // Load username and set greeting
             LoadUserInfo();
@@ -27,6 +35,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             NavigateToManagerCommand = new RelayCommand(new Action(() => NavigateToPage("Manager")));
             NavigateToAccountsCommand = new RelayCommand(new Action(() => NavigateToPage("Accounts")));
             NavigateToConfigCommand = new RelayCommand(new Action(() => NavigateToPage("Config")));
+            NavigateToLogScreenCommand = new RelayCommand(new Action(() => NavigateToPage("LogScreen")));
             NavigateToServerConfigCommand = new RelayCommand(new Action(() => NavigateToPage("ServerConfig")));
             LogoutCommand = new RelayCommand(new Action(ExecuteLogout));
             CloseAppCommand = new RelayCommand(new Action(() => System.Windows.Application.Current.Shutdown()));
@@ -59,6 +68,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                 OnPropertyChanged("IsAccountsActive");
                 OnPropertyChanged("IsConfigActive");
                 OnPropertyChanged("IsServerConfigActive");
+                OnPropertyChanged("IsLogScreenActive");
             }
         }
 
@@ -71,7 +81,10 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         {
             get { return ActiveMenu == "Accounts"; }
         }
-
+        public bool IsLogScreenActive
+        {
+            get { return ActiveMenu == "LogScreen"; }
+        }
         public bool IsConfigActive
         {
             get { return ActiveMenu == "Config"; }
@@ -82,6 +95,22 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             get { return ActiveMenu == "ServerConfig"; }
         }
 
+        // Admin permission properties
+        public bool IsAdminUser
+        {
+            get { return !string.IsNullOrEmpty(_username) && _username.Equals("admin", StringComparison.OrdinalIgnoreCase); }
+        }
+
+        public bool CanAccessServerConfig
+        {
+            get { return IsAdminUser; }
+        }
+
+        public bool CanAccessLogScreen
+        {
+            get { return IsAdminUser; }
+        }
+        
         public UserControl ManagerPage
         {
             get { return _managerPage; }
@@ -101,6 +130,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             {
                 _username = value;
                 OnPropertyChanged("Username");
+                OnPropertyChanged("IsAdminUser");
+                OnPropertyChanged("CanAccessServerConfig");
+                OnPropertyChanged("CanAccessLogScreen");
                 UpdateUserGreeting();
             }
         }
@@ -122,9 +154,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         public ICommand NavigateToManagerCommand { get; private set; }
         public ICommand NavigateToAccountsCommand { get; private set; }
         public ICommand NavigateToConfigCommand { get; private set; }
+        public ICommand NavigateToLogScreenCommand { get; private set; }
         public ICommand NavigateToServerConfigCommand { get; private set; }
         public ICommand LogoutCommand { get; private set; }
-
         public ICommand CloseAppCommand { get; private set; }
 
         #endregion
@@ -133,21 +165,42 @@ namespace KnightDesk.Presentation.WPF.ViewModels
 
         private void NavigateToPage(string pageName)
         {
+            // Check permissions for admin-only pages
+            if ((pageName == "LogScreen" && !CanAccessLogScreen) || 
+                (pageName == "ServerConfig" && !CanAccessServerConfig))
+            {
+                System.Windows.MessageBox.Show(
+                    "Access Denied. Only administrators can access this page.", 
+                    "Permission Required", 
+                    System.Windows.MessageBoxButton.OK, 
+                    System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
             ActiveMenu = pageName;
 
             switch (pageName)
             {
                 case "Manager":
-                    CurrentPage = new ManagerPage(); // This will show the original content
+                    CurrentPage = _managerPage; // Use cached instance to preserve state
                     break;
                 case "Accounts":
-                    CurrentPage = new AccountPage();
+                    CurrentPage = _accountPage;
                     break;
                 case "Config":
-                    CurrentPage = new SettingsPage();
+                    CurrentPage = _settingsPage;
+                    break;
+                case "LogScreen":
+                    if (CanAccessLogScreen)
+                    {
+                        CurrentPage = _logScreenPage;
+                    }
                     break;
                 case "ServerConfig":
-                    CurrentPage = new ServerConfigPage();
+                    if (CanAccessServerConfig)
+                    {
+                        CurrentPage = _serverConfigPage;
+                    }
                     break;
                 default:
                     CurrentPage = null;
@@ -158,6 +211,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels
         {
             try
             {
+                // Cleanup resources before logout
+                Cleanup();
+                
                 // Clear saved user data
                 Properties.Settings.Default.UserId = 0;
                 Properties.Settings.Default.Username = string.Empty;
@@ -197,6 +253,13 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             {
                 Username = savedUsername;
             }
+            else
+            {
+                // Trigger property notifications even if username is empty
+                OnPropertyChanged("IsAdminUser");
+                OnPropertyChanged("CanAccessServerConfig");
+                OnPropertyChanged("CanAccessLogScreen");
+            }
         }
 
         private void UpdateUserGreeting()
@@ -211,6 +274,29 @@ namespace KnightDesk.Presentation.WPF.ViewModels
             }
         }
 
+        #endregion
+
+        #region Cleanup
+        
+        public void Cleanup()
+        {
+            try
+            {
+                // Cleanup ManagerPage if it has cleanup method
+                if (_managerPage is ManagerPage managerPage)
+                {
+                    var viewModel = managerPage.DataContext as ManagerPageViewModel;
+                    viewModel?.Cleanup();
+                }
+                
+                Console.WriteLine("MainWindowViewModel: Cleanup completed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MainWindowViewModel: Error during cleanup: {ex.Message}");
+            }
+        }
+        
         #endregion
 
         #region INotifyPropertyChanged

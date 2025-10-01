@@ -215,6 +215,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels
                         {
                             // Server not reachable - stay on login page with error message
                             ErrorMessage = "Hãy đăng nhập lại!";
+                            IsLoading = false;
                             return;
                         }
 

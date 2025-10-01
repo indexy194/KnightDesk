@@ -122,14 +122,16 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void ExecuteBrowseDataPath()
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.Description = "Select Data Storage Directory";
-            dialog.SelectedPath = DataPath;
-
-            if (dialog.ShowDialog() == DialogResult.OK)
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Title = "Select Data File";
+            //only txt files
+            dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            dialog.InitialDirectory = !string.IsNullOrEmpty(DataPath) ? Path.GetDirectoryName(DataPath) : string.Empty;
+            if (dialog.ShowDialog() == true)
             {
-                DataPath = dialog.SelectedPath;
+                DataPath = dialog.FileName;
             }
+
         }
 
         private void ExecuteBrowseConfigPath()
@@ -149,7 +151,6 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             try
             {
                 SaveSettingsToRegistry();
-                //ValidateAndCreateDirectories();
                 
                 System.Windows.MessageBox.Show("Settings saved successfully!", "Success", 
                     MessageBoxButton.OK, MessageBoxImage.Information);
@@ -182,17 +183,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
         {
             try
             {
-                // Load from registry or config file
-                //RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
                 
                 GamePath = Properties.Settings.Default.GamePath;
-                //DataPath = key.GetValue("DataPath", GetDefaultDataPath()).ToString();
-                //ConfigPath = key.GetValue("ConfigPath", GetDefaultConfigPath()).ToString();
-                //StartWithWindows = Convert.ToBoolean(key.GetValue("StartWithWindows", false));
-                //MinimizeToTray = Convert.ToBoolean(key.GetValue("MinimizeToTray", true));
-                //AutoUpdate = Convert.ToBoolean(key.GetValue("AutoUpdate", true));
-
-                //key.Close();
+                DataPath = Properties.Settings.Default.LogPath;
             }
             catch (Exception ex)
             {
@@ -204,97 +197,16 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
 
         private void SaveSettingsToRegistry()
         {
-            //RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\KnightDesk");
-            
-            //key.SetValue("GamePath", GamePath);
-            //key.SetValue("DataPath", DataPath);
-            //key.SetValue("ConfigPath", ConfigPath);
-            //key.SetValue("StartWithWindows", StartWithWindows);
-            //key.SetValue("MinimizeToTray", MinimizeToTray);
-            //key.SetValue("AutoUpdate", AutoUpdate);
-
-            //key.Close();
-
-            //// Handle Windows startup
-            //HandleWindowsStartup();
-
             //my code
             Properties.Settings.Default.GamePath = GamePath;
+            Properties.Settings.Default.LogPath = DataPath;
             Properties.Settings.Default.Save();
-        }
-
-        private void HandleWindowsStartup()
-        {
-            RegistryKey startupKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-            
-            if (StartWithWindows)
-            {
-                if (startupKey != null)
-                {
-                    startupKey.SetValue("KnightDesk", System.Reflection.Assembly.GetExecutingAssembly().Location);
-                }
-            }
-            else
-            {
-                if (startupKey != null)
-                {
-                    try
-                    {
-                        startupKey.DeleteValue("KnightDesk", false);
-                    }
-                    catch
-                    {
-                        // Value doesn't exist, ignore
-                    }
-                }
-            }
-            
-            if (startupKey != null)
-            {
-                startupKey.Close();
-            }
-        }
-
-        //private void ValidateAndCreateDirectories()
-        //{
-        //    CreateDirectoryIfNotExists(DataPath, "Data Storage");
-        //    CreateDirectoryIfNotExists(ConfigPath, "Configuration");
-        //}
-
-        private void CreateDirectoryIfNotExists(string path, string description)
-        {
-            if (!string.IsNullOrEmpty(path) && !Directory.Exists(path))
-            {
-                try
-                {
-                    Directory.CreateDirectory(path);
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show(string.Format("Warning: Could not create {0} directory '{1}': {2}", description, path, ex.Message), 
-                        "Directory Creation Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
         }
 
         private void ResetToDefaults()
         {
             GamePath = string.Empty;
-        }
-
-        private string GetDefaultGamePath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Game");
-        }
-
-        private string GetDefaultDataPath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Data");
-        }
-
-        private string GetDefaultConfigPath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Config");
+            DataPath = string.Empty;
         }
 
         #endregion

@@ -64,6 +64,8 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             LoadFavoriteAccounts();
         }
 
+       
+
         #region Properties
 
         // Static lists for ComboBox binding - expose through ViewModel
@@ -97,7 +99,20 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             get { return _selectedAccount; }
             set
             {
+                // Clear previous selection
+                if (_selectedAccount != null)
+                {
+                    _selectedAccount.IsSelectedForControl = false;
+                }
+                
                 _selectedAccount = value;
+                
+                // Mark new selection
+                if (_selectedAccount != null)
+                {
+                    _selectedAccount.IsSelectedForControl = true;
+                }
+                
                 OnPropertyChanged("SelectedAccount");
             }
         }
@@ -232,6 +247,7 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
             {
                 // Stop game
                 StopGame(account);
+                ResetToolState();
             }
             else
             {
@@ -245,6 +261,9 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
         {
             if (account == null || !account.IsGameRunning) return;
 
+            // Switch to this account for auto control panel
+            SelectedAccount = account;
+            
             CheckGameConnection(account);
             OnPropertyChanged(nameof(CanUseAutoControls));
             OnPropertyChanged(nameof(IsConnectionStatusVisible));
@@ -1003,7 +1022,24 @@ namespace KnightDesk.Presentation.WPF.ViewModels.Pages
                 }));
             }));
         }
+        private void ResetToolState()
+        {
+            //Auto state
+            _selectedAccount.AutoSettings.AutoState = false;
+            //Auto event
+            _selectedAccount.AutoSettings.AutoEvent = false;
+            _selectedAccount.AutoSettings.EventName = string.Empty;
+            //Auto equip
+            _selectedAccount.AutoSettings.AutoEquip = false;
+            _selectedAccount.AutoSettings.EquipTypeName = string.Empty;
+            //Name focus
+            _selectedAccount.AutoSettings.NameFocus = string.Empty;
+            //Mount
+            _selectedAccount.AutoSettings.MountType = MountType.Heo;
+            _selectedAccount.AutoSettings.MountType2 = MountType.Heo;
+            OnPropertyChanged(nameof(SelectedAccount));
 
+        }
         #endregion
 
         #region Cleanup

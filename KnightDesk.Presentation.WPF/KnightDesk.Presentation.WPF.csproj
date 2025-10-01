@@ -76,6 +76,9 @@
     <Compile Include="Pages\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\LogScreenPage.xaml.cs">
+      <DependentUpon>LogScreenPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ServerConfigPage.xaml.cs">
       <DependentUpon>ServerConfigPage.xaml</DependentUpon>
     </Compile>
@@ -90,11 +93,16 @@
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\AccountPageViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\ViewModels.Pages\LogScreenPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\ManagerPageViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\ServerConfigPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModels.Pages\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Page Include="Pages\LogScreenPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

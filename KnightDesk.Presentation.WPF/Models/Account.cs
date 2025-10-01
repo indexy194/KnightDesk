@@ -25,6 +25,7 @@ namespace KnightDesk.Presentation.WPF.Models
         private string _gameStatus = "Offline";
         private AutoSettings _autoSettings;
         private bool _isConnectedToGame;
+        private bool _isSelectedForControl;
 
         public int Id
         {
@@ -149,6 +150,12 @@ namespace KnightDesk.Presentation.WPF.Models
                     OnPropertyChanged(nameof(CanUseGameControls));
                 }
             }
+        }
+
+        public bool IsSelectedForControl
+        {
+            get => _isSelectedForControl;
+            set => SetProperty(ref _isSelectedForControl, value, nameof(IsSelectedForControl));
         }
 
         // Computed properties

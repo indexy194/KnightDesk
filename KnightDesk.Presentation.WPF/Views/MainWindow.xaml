@@ -122,7 +122,8 @@
                     </Grid>
                 </Button>
 
-                <Button Command="{Binding NavigateToServerConfigCommand}" >
+                <Button Command="{Binding NavigateToServerConfigCommand}" 
+                        Visibility="{Binding CanAccessServerConfig, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
                             <Style.Triggers>
@@ -144,6 +145,37 @@
                                     <Setter Property="Visibility" Value="Hidden"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsServerConfigActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
+                    </Grid>
+                </Button>
+                <Button Command="{Binding NavigateToLogScreenCommand}" 
+                        Visibility="{Binding CanAccessLogScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource menuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLogScreenActive}" Value="True">
+                                    <Setter Property="Background" Value="#7B68EE"/>
+                                    <Setter Property="BorderBrush" Value="#9370DB"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <fa:ImageAwesome Icon="FileTextOutline" Style="{StaticResource buttonIcon}" />
+                            <TextBlock Text="Log Screen" Style="{StaticResource buttonText}" />
+                        </StackPanel>
+                        <fa:ImageAwesome Icon="AngleRight" HorizontalAlignment="Right">
+                            <fa:ImageAwesome.Style>
+                                <Style TargetType="fa:ImageAwesome" BasedOn="{StaticResource buttonIconExpand}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLogScreenActive}" Value="True">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
